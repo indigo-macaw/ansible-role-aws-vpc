@@ -1,0 +1,25 @@
+---
+
+- name: configure security groups ({{ sg_collection_description }})
+  environment:
+    AWS_PROFILE: '{{ vpc_name }}'
+  ec2_group:
+
+    name: '{{ item.key }}'
+    description: '{{ item.value.description | default(None) }}'
+    vpc_id: '{{ vpc_id }}'
+    region: '{{ region }}'
+    state: '{{ item.value.state | default("present") }}'
+
+    rules: '{{ item.value.rules | default(None) }}'
+    rules_egress: '{{ item.value.rules_egress | default(None) }}'
+
+  with_dict: '{{ sg_collection | default({}) }}'
+  register: ec2_group
+
+- include: roles/common/tasks/slack.yml
+  vars:
+    message: >
+      updated *security groups ({{ sg_collection_description }})*
+      in *VPC {{ vpc_name }}*
+  when: ec2_group.changed

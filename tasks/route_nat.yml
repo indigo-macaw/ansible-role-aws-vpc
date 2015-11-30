@@ -1,0 +1,19 @@
+---
+
+- name: find NAT instance ID
+  command: aws ec2 describe-instances
+             --filters Name=tag:Function,Values=nat
+                       Name=vpc-id,Values='{{ vpc_id }}'
+             --query 'Reservations[0].Instances[0].InstanceId'
+             --output text
+  environment:
+    AWS_DEFAULT_PROFILE: '{{ vpc_name }}'
+  register: nat_instance_id
+  changed_when: False
+
+- name: create NAT instance route
+  set_fact:
+    route_nat:
+      dest: 0.0.0.0/0
+      instance_id: '{{ nat_instance_id.stdout }}'
+  when: nat_instance_id.stdout != 'None'

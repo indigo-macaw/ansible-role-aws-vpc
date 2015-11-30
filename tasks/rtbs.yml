@@ -1,0 +1,67 @@
+---
+
+- name: configure public route table
+  environment:
+    AWS_PROFILE: '{{ vpc_name }}'
+  ec2_vpc_route_table:
+    region: '{{ region }}'
+    vpc_id: '{{ vpc_id }}'
+    routes: '{{ routes_public }}'
+    propagating_vgw_ids: [ '{{ vgw_id }}' ]
+    subnets: '{{ subnets.public | map(attribute="cidr") | list }}'
+    resource_tags: { 'Name': 'public' }
+  register: ec2_vpc_route_table
+
+- include: roles/common/tasks/slack.yml
+  vars:
+     message: 'configured *public route table* in *VPC {{ vpc_name }}*'
+  when: ec2_vpc_route_table.changed
+
+- name: check for blackhole default route in private route table
+  command: aws ec2 describe-route-tables
+             --filters Name=tag:Name,Values=private
+             --query 'RouteTables[0].Routes[?State == `blackhole`]
+                          | [?DestinationCidrBlock == `0.0.0.0/0`]'
+             --output text
+  environment:
+    AWS_DEFAULT_PROFILE: '{{ vpc_name }}'
+  register: blackhole_default_route
+  changed_when: False
+
+- block:
+
+  - name: get private route table ID
+    command: aws ec2 describe-route-tables
+               --filters Name=tag:Name,Values=private
+               --query 'RouteTables[0].RouteTableId'
+               --output text
+    environment:
+      AWS_DEFAULT_PROFILE: '{{ vpc_name }}'
+    register: private_route_table_id
+    changed_when: False
+
+  - name: delete blackhole default route
+    command: aws ec2 delete-route
+               --route-table-id '{{ private_route_table_id.stdout }}'
+               --destination-cidr-block 0.0.0.0/0
+    environment:
+      AWS_DEFAULT_PROFILE: '{{ vpc_name }}'
+
+  when: blackhole_default_route.stdout != ''
+
+- name: configure private route table
+  environment:
+    AWS_PROFILE: '{{ vpc_name }}'
+  ec2_vpc_route_table:
+    region: '{{ region }}'
+    vpc_id: '{{ vpc_id }}'
+    routes: '{{ routes_private }}'
+    propagating_vgw_ids: [ '{{ vgw_id }}' ]
+    subnets: '{{ subnets.private | map(attribute="cidr") | list }}'
+    resource_tags: { 'Name': 'private' }
+  register: ec2_vpc_route_table
+
+- include: roles/common/tasks/slack.yml
+  vars:
+     message: 'configured *private route table* in *VPC {{ vpc_name }}*'
+  when: ec2_vpc_route_table.changed

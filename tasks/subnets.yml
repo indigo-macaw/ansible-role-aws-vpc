@@ -1,0 +1,19 @@
+---
+
+- name: configure subnets
+  environment:
+    AWS_PROFILE: '{{ vpc_name }}'
+  ec2_vpc_subnet:
+    region: '{{ region }}'
+    state: present
+    vpc_id: '{{ vpc_id }}'
+    az: '{{ item.az }}'
+    cidr: '{{ item.cidr }}'
+    resource_tags: '{{ item.resource_tags }}'
+  with_items: subnets.public + subnets.private
+  register: ec2_vpc_subnet
+
+- include: roles/common/tasks/slack.yml
+  vars:
+     message: 'configured *subnets* in *VPC {{ vpc_name }}*'
+  when: ec2_vpc_subnet.changed

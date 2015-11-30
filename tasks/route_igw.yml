@@ -1,0 +1,7 @@
+---
+
+- name: create Internet gateway route
+  set_fact:
+    route_igw:
+      dest: 0.0.0.0/0
+      gateway_id: igw

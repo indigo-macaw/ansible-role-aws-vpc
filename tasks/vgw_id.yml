@@ -1,0 +1,12 @@
+---
+
+- name: describe virtual gateways
+  command: aws ec2 describe-vpn-gateways
+  environment:
+    AWS_DEFAULT_PROFILE: '{{ vpc_name }}'
+  register: vgws
+  changed_when: False
+
+- name: get attached virtual gateway ID
+  set_fact:
+    vgw_id: '{{ vgws.stdout | from_json | get_vgw_id(vpc_id) }}'

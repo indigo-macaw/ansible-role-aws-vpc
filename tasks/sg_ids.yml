@@ -1,0 +1,16 @@
+---
+
+- name: describe security groups
+  command: aws ec2 describe-security-groups
+  environment:
+    AWS_DEFAULT_PROFILE: '{{ vpc_name }}'
+  register: sgs
+  changed_when: False
+
+- name: convert security group data to JSON
+  set_fact:
+    sgs: '{{ sgs.stdout | from_json }}'
+
+- name: extract security group IDs and store them by name
+  set_fact:
+    sg_ids_by_name: '{{ sgs.SecurityGroups | get_sg_ids_by_name(vpc_id) }}'

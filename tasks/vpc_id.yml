@@ -1,0 +1,16 @@
+---
+
+- name: describe VPCs
+  command: aws ec2 describe-vpcs --filters Name=tag:Name,Values={{ vpc_name }}
+  environment:
+    AWS_DEFAULT_PROFILE: '{{ vpc_name }}'
+  register: vpcs
+  changed_when: False
+
+- name: convert VPC data to JSON
+  set_fact:
+    vpc: '{{ vpcs.stdout | from_json }}'
+
+- name: extract VPC ID
+  set_fact:
+    vpc_id: '{{ vpc.Vpcs | map(attribute="VpcId") | list | first }}'

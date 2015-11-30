@@ -1,0 +1,5 @@
+---
+
+- name: create public routes
+  set_fact:
+    routes_public: '{{ [route_igw] + routes_pcxs }}'
