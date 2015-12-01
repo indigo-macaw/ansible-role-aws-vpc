@@ -1,12 +1,11 @@
 ---
 
 - name: configure security groups ({{ sg_collection_description }})
-  environment:
-    AWS_PROFILE: '{{ vpc_name }}'
   ec2_group:
 
     name: '{{ item.key }}'
     description: '{{ item.value.description | default(None) }}'
+    profile: '{{ profile }}'
     vpc_id: '{{ vpc_id }}'
     region: '{{ region }}'
     state: '{{ item.value.state | default("present") }}'

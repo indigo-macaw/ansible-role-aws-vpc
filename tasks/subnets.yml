@@ -1,9 +1,8 @@
 ---
 
 - name: configure subnets
-  environment:
-    AWS_PROFILE: '{{ vpc_name }}'
   ec2_vpc_subnet:
+    profile: '{{ profile }}'
     region: '{{ region }}'
     state: present
     vpc_id: '{{ vpc_id }}'

@@ -2,8 +2,7 @@
 
 - name: describe VPCs
   command: aws ec2 describe-vpcs --filters Name=tag:Name,Values={{ vpc_name }}
-  environment:
-    AWS_DEFAULT_PROFILE: '{{ vpc_name }}'
+                   --profile '{{ profile }}'
   register: vpcs
   changed_when: False
 

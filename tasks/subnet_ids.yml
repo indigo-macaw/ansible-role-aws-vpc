@@ -2,8 +2,7 @@
 
 - name: describe subnets
   command: aws ec2 describe-subnets
-  environment:
-    AWS_DEFAULT_PROFILE: '{{ vpc_name }}'
+                   --profile '{{ profile }}'
   register: subnets_data
   changed_when: False
 

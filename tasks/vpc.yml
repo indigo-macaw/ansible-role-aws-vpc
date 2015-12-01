@@ -1,10 +1,9 @@
 ---
 
 - name: configure VPC
-  environment:
-    AWS_PROFILE: '{{ vpc_name }}'
   ec2_vpc:
 
+    profile: '{{ profile }}'
     region: '{{ region }}'
     resource_tags: { 'Name': '{{ vpc_name }}' }
     cidr_block: '{{ cidr_block }}'

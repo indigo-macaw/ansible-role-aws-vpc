@@ -6,8 +6,7 @@
                        Name=vpc-id,Values='{{ vpc_id }}'
              --query 'Reservations[0].Instances[0].InstanceId'
              --output text
-  environment:
-    AWS_DEFAULT_PROFILE: '{{ vpc_name }}'
+             --profile '{{ profile }}'
   register: nat_instance_id
   changed_when: False
 

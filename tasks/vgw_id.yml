@@ -2,8 +2,7 @@
 
 - name: describe virtual gateways
   command: aws ec2 describe-vpn-gateways
-  environment:
-    AWS_DEFAULT_PROFILE: '{{ vpc_name }}'
+                   --profile '{{ profile }}'
   register: vgws
   changed_when: False
 
