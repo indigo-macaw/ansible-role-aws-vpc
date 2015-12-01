@@ -1,8 +1,9 @@
 ---
 
 - name: describe virtual gateways
-  command: aws ec2 describe-vpn-gateways
-                   --profile '{{ profile }}'
+  command: >
+    aws ec2 describe-vpn-gateways
+            --profile '{{ profile }}'
   register: vgws
   changed_when: False
 

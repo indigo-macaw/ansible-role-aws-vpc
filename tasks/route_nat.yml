@@ -1,12 +1,13 @@
 ---
 
 - name: find NAT instance ID
-  command: aws ec2 describe-instances
-             --filters Name=tag:Function,Values=nat
-                       Name=vpc-id,Values='{{ vpc_id }}'
-             --query 'Reservations[0].Instances[0].InstanceId'
-             --output text
-             --profile '{{ profile }}'
+  command: >
+    aws ec2 describe-instances
+            --filters Name=tag:Function,Values=nat
+                      Name=vpc-id,Values='{{ vpc_id }}'
+            --query 'Reservations[0].Instances[0].InstanceId'
+            --output text
+            --profile '{{ profile }}'
   register: nat_instance_id
   changed_when: False
 

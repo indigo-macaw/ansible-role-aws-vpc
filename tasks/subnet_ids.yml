@@ -1,8 +1,9 @@
 ---
 
 - name: describe subnets
-  command: aws ec2 describe-subnets
-                   --profile '{{ profile }}'
+  command: >
+    aws ec2 describe-subnets
+            --profile '{{ profile }}'
   register: subnets_data
   changed_when: False
 
