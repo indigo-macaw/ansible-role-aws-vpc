@@ -12,10 +12,12 @@
     resource_tags: { 'Name': 'public' }
   register: ec2_vpc_route_table
 
-- include: roles/common/tasks/slack.yml
+- name: call optional notifier
+  include: roles/{{ notifier_role }}/tasks/main.yml
   vars:
      message: 'configured *public route table* in *VPC {{ vpc_name }}*'
-  when: ec2_vpc_route_table.changed
+  when: notifier_role is defined and
+        ec2_vpc_route_table.changed
 
 - name: check for blackhole default route in private route table
   command: aws ec2 describe-route-tables
@@ -61,7 +63,9 @@
     resource_tags: { 'Name': 'private' }
   register: ec2_vpc_route_table
 
-- include: roles/common/tasks/slack.yml
+- name: call optional notifier
+  include: roles/{{ notifier_role }}/tasks/main.yml
   vars:
      message: 'configured *private route table* in *VPC {{ vpc_name }}*'
-  when: ec2_vpc_route_table.changed
+  when: notifier_role is defined and
+        ec2_vpc_route_table.changed

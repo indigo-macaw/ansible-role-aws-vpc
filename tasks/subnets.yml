@@ -13,7 +13,9 @@
   with_items: subnets.public + subnets.private
   register: ec2_vpc_subnet
 
-- include: roles/common/tasks/slack.yml
+- name: call optional notifier
+  include: roles/{{ notifier_role }}/tasks/main.yml
   vars:
      message: 'configured *subnets* in *VPC {{ vpc_name }}*'
-  when: ec2_vpc_subnet.changed
+  when: notifier_role is defined and
+        ec2_vpc_subnet.changed

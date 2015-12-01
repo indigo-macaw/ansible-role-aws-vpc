@@ -17,9 +17,11 @@
   with_dict: '{{ sg_collection | default({}) }}'
   register: ec2_group
 
-- include: roles/common/tasks/slack.yml
+- name: call optional notifier
+  include: roles/{{ notifier_role }}/tasks/main.yml
   vars:
     message: >
       updated *security groups ({{ sg_collection_description }})*
       in *VPC {{ vpc_name }}*
-  when: ec2_group.changed
+  when: notifier_role is defined and
+        ec2_group.changed
