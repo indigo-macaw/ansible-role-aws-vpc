@@ -14,7 +14,7 @@
 - name: call optional notifier
   include: roles/{{ notifier_role }}/tasks/main.yml
   vars:
-     message: 'configured *public route table* in *VPC {{ vpc_name }}*'
+     message: 'configured <b>public route table</b> in <b>VPC {{ vpc_name }}</b>'
   when: notifier_role is defined and
         ec2_vpc_route_table.changed
 
@@ -64,6 +64,6 @@
 - name: call optional notifier
   include: roles/{{ notifier_role }}/tasks/main.yml
   vars:
-     message: 'configured *private route table* in *VPC {{ vpc_name }}*'
+     message: 'configured <b>private route table</b> in <b>VPC {{ vpc_name }}</b>'
   when: notifier_role is defined and
         ec2_vpc_route_table.changed

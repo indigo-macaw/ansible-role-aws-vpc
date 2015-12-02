@@ -15,6 +15,6 @@
 - name: call optional notifier
   include: roles/{{ notifier_role }}/tasks/main.yml
   vars:
-     message: 'configured *subnets* in *VPC {{ vpc_name }}*'
+     message: 'configured <b>subnets</b> in <b>VPC {{ vpc_name }}</b>'
   when: notifier_role is defined and
         ec2_vpc_subnet.changed

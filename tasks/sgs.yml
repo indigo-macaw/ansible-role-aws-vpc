@@ -20,7 +20,7 @@
   include: roles/{{ notifier_role }}/tasks/main.yml
   vars:
     message: >
-      updated *security groups ({{ sg_collection_description }})*
-      in *VPC {{ vpc_name }}*
+      updated <b>security groups ({{ sg_collection_description }})</b>
+      in <b>VPC {{ vpc_name }}</b>
   when: notifier_role is defined and
         ec2_group.changed
