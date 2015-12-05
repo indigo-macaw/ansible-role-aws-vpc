@@ -49,7 +49,9 @@
               --destination-cidr-block 0.0.0.0/0
               --profile '{{ profile }}'
 
-  when: blackhole_default_route.stdout != ''
+  when: >
+    blackhole_default_route.stdout != '' and
+    blackhole_default_route.stdout != 'None'
 
 - name: configure private route table
   ec2_vpc_route_table:
