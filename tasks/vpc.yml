@@ -16,7 +16,7 @@
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
-     message: 'configured <b>VPC {{ vpc_name }}</b>'
+     message: 'configured <a href="{{ vpc_url }}">VPC {{ vpc_name }}</a>'
   when: >
     notifier_role is defined and
     ec2_vpc.changed

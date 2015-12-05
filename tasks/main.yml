@@ -1,9 +1,17 @@
 ---
 
+- name: set global facts
+  set_fact:
+    vpc_url: >-
+      https://console.aws.amazon.com/vpc/home?region={{ region
+        }}#vpcs:filter=^{{ vpc_name }}$
+
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
-    message: 'started running role <b>aws-vpc</b> on <b>VPC {{ vpc_name }}</b>'
+    message: >
+      started running role <b>aws-vpc</b> on
+      <a href="{{ vpc_url }}">VPC {{ vpc_name }}</a>
   when: notifier_role is defined
 
 - include: vpc_id.yml
@@ -46,12 +54,15 @@
     include: 'roles/{{ notifier_role }}/tasks/main.yml'
     vars:
       message: >
-        reconfigured <b>VPC {{ vpc_name }}</b> to include a <b>NAT route</b>
+        added a NAT route to the private route table in
+        <a href="{{ vpc_url }}">VPC {{ vpc_name }}</a>
     when: notifier_role is defined
   when: 'instances["nat"] is defined and ec2.changed'
 
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
-    message: 'finished running role <b>aws-vpc</b> on <b>VPC {{ vpc_name }}</b>'
+    message: >
+      finished running role <b>aws-vpc</b> on
+      <a href="{{ vpc_url }}">VPC {{ vpc_name }}</a>
   when: notifier_role is defined

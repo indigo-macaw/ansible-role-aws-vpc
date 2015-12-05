@@ -21,7 +21,7 @@
   vars:
     message: >
       updated <b>security groups ({{ sg_collection_description }})</b>
-      in <b>VPC {{ vpc_name }}</b>
+      in <a href="{{ vpc_url }}">VPC {{ vpc_name }}</a>
   when: >
     notifier_role is defined and
     ec2_group.changed
