@@ -13,4 +13,5 @@
 
 - name: extract subnet IDs and store them by name
   set_fact:
-    subnet_ids_by_name: '{{ subnets_json.Subnets | get_subnet_ids_by_name(vpc_id) }}'
+    subnet_ids_by_name: >
+      {{ subnets_json.Subnets | get_subnet_ids_by_name(vpc_id) }}

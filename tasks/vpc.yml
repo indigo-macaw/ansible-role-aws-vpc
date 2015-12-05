@@ -14,8 +14,9 @@
   register: ec2_vpc
 
 - name: call optional notifier
-  include: roles/{{ notifier_role }}/tasks/main.yml
+  include: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
      message: 'configured <b>VPC {{ vpc_name }}</b>'
-  when: notifier_role is defined and
-        ec2_vpc.changed
+  when: >
+    notifier_role is defined and
+    ec2_vpc.changed

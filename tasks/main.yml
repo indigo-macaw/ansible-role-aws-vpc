@@ -1,7 +1,7 @@
 ---
 
 - name: call optional notifier
-  include: roles/{{ notifier_role }}/tasks/main.yml
+  include: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
     message: 'started running role <b>aws-vpc</b> on <b>VPC {{ vpc_name }}</b>'
   when: notifier_role is defined
@@ -36,21 +36,22 @@
 - include: roles/aws-ec2/tasks/instance.yml
   vars:
     instance: nat
-  when: instances['nat'] is defined
+  when: 'instances["nat"] is defined'
 
 - block:
   - include: route_nat.yml
   - include: routes_private.yml
   - include: rtbs.yml
   - name: call optional notifier
-    include: roles/{{ notifier_role }}/tasks/main.yml
+    include: 'roles/{{ notifier_role }}/tasks/main.yml'
     vars:
-      message: 'reconfigured <b>VPC {{ vpc_name }}</b> to include a <b>NAT route</b>'
+      message: >
+        reconfigured <b>VPC {{ vpc_name }}</b> to include a <b>NAT route</b>
     when: notifier_role is defined
-  when: instances['nat'] is defined and ec2.changed
+  when: 'instances["nat"] is defined and ec2.changed'
 
 - name: call optional notifier
-  include: roles/{{ notifier_role }}/tasks/main.yml
+  include: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
     message: 'finished running role <b>aws-vpc</b> on <b>VPC {{ vpc_name }}</b>'
   when: notifier_role is defined

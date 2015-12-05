@@ -9,6 +9,7 @@
 
 - name: create VPC peering connection routes
   set_fact:
-    routes_pcxs: '{{ pcxs.stdout
-                     | from_json
-                     | pcxs_to_routes(vpc_id) }}'
+    routes_pcxs: >
+      {{ pcxs.stdout
+         | from_json
+         | pcxs_to_routes(vpc_id) }}

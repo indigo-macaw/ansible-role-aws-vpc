@@ -12,11 +12,12 @@
   register: ec2_vpc_route_table
 
 - name: call optional notifier
-  include: roles/{{ notifier_role }}/tasks/main.yml
+  include: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
      message: 'configured <b>public route table</b> in <b>VPC {{ vpc_name }}</b>'
-  when: notifier_role is defined and
-        ec2_vpc_route_table.changed
+  when: >
+    notifier_role is defined and
+    ec2_vpc_route_table.changed
 
 - name: check for blackhole default route in private route table
   command: >
@@ -62,8 +63,9 @@
   register: ec2_vpc_route_table
 
 - name: call optional notifier
-  include: roles/{{ notifier_role }}/tasks/main.yml
+  include: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
      message: 'configured <b>private route table</b> in <b>VPC {{ vpc_name }}</b>'
-  when: notifier_role is defined and
-        ec2_vpc_route_table.changed
+  when: >
+    notifier_role is defined and
+    ec2_vpc_route_table.changed
