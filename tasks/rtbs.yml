@@ -9,17 +9,21 @@
     propagating_vgw_ids: [ '{{ vgw_id }}' ]
     subnets: '{{ subnets.public | map(attribute="cidr") | list }}'
     resource_tags: { 'Name': 'public' }
-  register: ec2_vpc_route_table
+  register: public_route_table
 
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
-     message: >
-       configured <b>public route table</b> in
-       <a href="{{ vpc_url }}">VPC {{ vpc_name }}</a>
+    message: >
+      configured the <a href="https://console.aws.amazon.com/vpc/home?region={{
+        region
+      }}#routetables:filter={{
+        public_route_table.route_table.id
+      }}">public route table</a> in
+      <a href="{{ vpc_url }}">VPC {{ vpc_name }}</a>
   when: >
     notifier_role is defined and
-    ec2_vpc_route_table.changed
+    public_route_table.changed
 
 - name: check for blackhole default route in private route table
   command: >
@@ -64,14 +68,18 @@
     propagating_vgw_ids: [ '{{ vgw_id }}' ]
     subnets: '{{ subnets.private | map(attribute="cidr") | list }}'
     resource_tags: { 'Name': 'private' }
-  register: ec2_vpc_route_table
+  register: private_route_table
 
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
-     message: >
-       configured <b>private route table</b> in
-       <a href="{{ vpc_url }}">VPC {{ vpc_name }}</a>
+    message: >
+      configured the <a href="https://console.aws.amazon.com/vpc/home?region={{
+        region
+      }}#routetables:filter={{
+        private_route_table.route_table.id
+      }}">private route table</a> in
+      <a href="{{ vpc_url }}">VPC {{ vpc_name }}</a>
   when: >
     notifier_role is defined and
-    ec2_vpc_route_table.changed
+    private_route_table.changed

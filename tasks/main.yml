@@ -54,7 +54,12 @@
     include: 'roles/{{ notifier_role }}/tasks/main.yml'
     vars:
       message: >
-        added a NAT route to the private route table in
+        added a NAT route to the
+        <a href="https://console.aws.amazon.com/vpc/home?region={{
+          region
+        }}#routetables:filter={{
+          private_route_table.route_table.id
+        }}">private route table</a> in
         <a href="{{ vpc_url }}">VPC {{ vpc_name }}</a>
     when: notifier_role is defined
   when: 'instances["nat"] is defined and ec2.changed'
