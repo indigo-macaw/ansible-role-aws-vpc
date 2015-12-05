@@ -55,6 +55,20 @@
               --destination-cidr-block 0.0.0.0/0
               --profile '{{ profile }}'
 
+  - name: call optional notifier
+    include: 'roles/{{ notifier_role }}/tasks/main.yml'
+    vars:
+      message: >
+        deleted a blackhole default route from the
+        <a href="https://console.aws.amazon.com/vpc/home?region={{
+          region
+        }}#routetables:filter={{
+          private_route_table_id.stdout
+        }}">private route table</a> in
+        <a href="{{ vpc_url }}">VPC {{ vpc_name }}</a>
+    when: >
+      notifier_role is defined
+
   when: >
     blackhole_default_route.stdout != '' and
     blackhole_default_route.stdout != 'None'
