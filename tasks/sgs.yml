@@ -20,7 +20,9 @@
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
     message: >
-      updated <b>security groups ({{ sg_collection_description }})</b>
+      updated the <a href="https://console.aws.amazon.com/ec2/v2/home?region={{
+        region
+      }}#SecurityGroups">{{ sg_collection_description }} security groups</a>
       in <a href="{{ vpc_url }}">VPC {{ vpc_name }}</a>
   when: >
     notifier_role is defined and
