@@ -38,8 +38,6 @@
     sg_collection: '{{ security_groups }}'
     sg_collection_description: 'VPC-specific'
 
-- include: subnet_ids.yml
-
 - include: roles/aws-ec2/tasks/instance.yml
   vars:
     instance: nat
