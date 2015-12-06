@@ -1,12 +1,20 @@
 ---
 
-- name: describe virtual gateways
+- name: select virtual gateway
   command: >
     aws ec2 describe-vpn-gateways
+            --query 'VpnGateways[?VpcAttachments[?VpcId == `{{ vpc_id }}` &&
+                                                  State == `attached`]]
+                     .VpnGatewayId'
+            --output text
             --profile '{{ profile }}'
-  register: vgws
+  register: vgw_id
   changed_when: False
 
-- name: get attached virtual gateway ID
+- debug: var=vgw_id
+
+- name: set virtual gateway fact
   set_fact:
-    vgw_id: '{{ vgws.stdout | from_json | get_vgw_id(vpc_id) }}'
+    vgw_id: '{{ vgw_id.stdout }}'
+
+- debug: var=vgw_id
