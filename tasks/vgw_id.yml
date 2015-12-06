@@ -11,10 +11,6 @@
   register: vgw_id
   changed_when: False
 
-- debug: var=vgw_id
-
 - name: set virtual gateway fact
   set_fact:
     vgw_id: '{{ vgw_id.stdout }}'
-
-- debug: var=vgw_id
