@@ -3,7 +3,7 @@
 - name: describe VPCs
   command: >
     aws ec2 describe-vpcs
-            --filters Name=tag:Name,Values={{ vpc_name }}
+            --filters Name=tag:Name,Values={{ aws_vpc_name }}
             --query 'Vpcs[].VpcId'
             --output text
             --profile '{{ aws_profile }}'

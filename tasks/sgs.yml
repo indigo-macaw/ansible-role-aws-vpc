@@ -23,7 +23,7 @@
       updated the <a href="https://console.aws.amazon.com/ec2/v2/home?region={{
         region
       }}#SecurityGroups">{{ sg_collection_description }} security groups</a>
-      in <a href="{{ vpc_url }}">VPC {{ vpc_name }}</a>
+      in <a href="{{ vpc_url }}">VPC {{ aws_vpc_name }}</a>
   when: >
     notifier_role is defined and
     ec2_group.changed

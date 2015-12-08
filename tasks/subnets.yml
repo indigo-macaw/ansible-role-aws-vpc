@@ -18,7 +18,7 @@
     message: >
       configured <a href="https://console.aws.amazon.com/vpc/home?region={{
         region }}#subnets:">subnets</a> in
-      <a href="{{ vpc_url }}">VPC {{ vpc_name }}</a>'
+      <a href="{{ vpc_url }}">VPC {{ aws_vpc_name }}</a>'
   when: >
     notifier_role is defined and
     ec2_vpc_subnet.changed

@@ -5,7 +5,7 @@
 
     profile: '{{ aws_profile }}'
     region: '{{ region }}'
-    resource_tags: { 'Name': '{{ vpc_name }}' }
+    resource_tags: { 'Name': '{{ aws_vpc_name }}' }
     cidr_block: '{{ cidr_block }}'
     state: present
 
@@ -16,7 +16,7 @@
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
-     message: 'configured <a href="{{ vpc_url }}">VPC {{ vpc_name }}</a>'
+     message: 'configured <a href="{{ vpc_url }}">VPC {{ aws_vpc_name }}</a>'
   when: >
     notifier_role is defined and
     ec2_vpc.changed
