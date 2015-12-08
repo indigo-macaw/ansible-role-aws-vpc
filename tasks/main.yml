@@ -3,7 +3,7 @@
 - name: set global facts
   set_fact:
     vpc_url: >-
-      https://console.aws.amazon.com/vpc/home?region={{ region
+      https://console.aws.amazon.com/vpc/home?region={{ aws_region
         }}#vpcs:filter=^{{ aws_vpc_name }}$
 
 - name: call optional notifier
@@ -52,10 +52,10 @@
     vars:
       message: >
         added a <a href="https://console.aws.amazon.com/ec2/v2/home?region={{
-          region
+          aws_region
         }}#Instances:tag:Function=nat">NAT</a> route to the
         <a href="https://console.aws.amazon.com/vpc/home?region={{
-          region
+          aws_region
         }}#routetables:filter={{
           private_route_table.route_table.id
         }}">private route table</a> in

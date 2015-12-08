@@ -7,7 +7,7 @@
     description: '{{ item.value.description | default(None) }}'
     profile: '{{ aws_profile }}'
     vpc_id: '{{ vpc_id }}'
-    region: '{{ region }}'
+    region: '{{ aws_region }}'
     state: '{{ item.value.state | default("present") }}'
 
     rules: '{{ item.value.rules | default(None) }}'
@@ -21,7 +21,7 @@
   vars:
     message: >
       updated the <a href="https://console.aws.amazon.com/ec2/v2/home?region={{
-        region
+        aws_region
       }}#SecurityGroups">{{ sg_collection_description }} security groups</a>
       in <a href="{{ vpc_url }}">VPC {{ aws_vpc_name }}</a>
   when: >

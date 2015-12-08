@@ -4,7 +4,7 @@
   ec2_vpc:
 
     profile: '{{ aws_profile }}'
-    region: '{{ region }}'
+    region: '{{ aws_region }}'
     resource_tags: { 'Name': '{{ aws_vpc_name }}' }
     cidr_block: '{{ cidr_block }}'
     state: present

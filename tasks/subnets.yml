@@ -3,7 +3,7 @@
 - name: configure subnets
   ec2_vpc_subnet:
     profile: '{{ aws_profile }}'
-    region: '{{ region }}'
+    region: '{{ aws_region }}'
     state: present
     vpc_id: '{{ vpc_id }}'
     az: '{{ item.az }}'
@@ -17,7 +17,7 @@
   vars:
     message: >
       configured <a href="https://console.aws.amazon.com/vpc/home?region={{
-        region }}#subnets:">subnets</a> in
+        aws_region }}#subnets:">subnets</a> in
       <a href="{{ vpc_url }}">VPC {{ aws_vpc_name }}</a>'
   when: >
     notifier_role is defined and

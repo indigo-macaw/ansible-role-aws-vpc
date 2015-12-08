@@ -3,7 +3,7 @@
 - name: configure public route table
   ec2_vpc_route_table:
     profile: '{{ aws_profile }}'
-    region: '{{ region }}'
+    region: '{{ aws_region }}'
     vpc_id: '{{ vpc_id }}'
     routes: '{{ routes_public }}'
     propagating_vgw_ids: [ '{{ vgw_id }}' ]
@@ -16,7 +16,7 @@
   vars:
     message: >
       configured the <a href="https://console.aws.amazon.com/vpc/home?region={{
-        region
+        aws_region
       }}#routetables:filter={{
         public_route_table.route_table.id
       }}">public route table</a> in
@@ -61,7 +61,7 @@
       message: >
         deleted a blackhole default route from the
         <a href="https://console.aws.amazon.com/vpc/home?region={{
-          region
+          aws_region
         }}#routetables:filter={{
           private_route_table_id.stdout
         }}">private route table</a> in
@@ -76,7 +76,7 @@
 - name: configure private route table
   ec2_vpc_route_table:
     profile: '{{ aws_profile }}'
-    region: '{{ region }}'
+    region: '{{ aws_region }}'
     vpc_id: '{{ vpc_id }}'
     routes: '{{ routes_private }}'
     propagating_vgw_ids: [ '{{ vgw_id }}' ]
@@ -89,7 +89,7 @@
   vars:
     message: >
       configured the <a href="https://console.aws.amazon.com/vpc/home?region={{
-        region
+        aws_region
       }}#routetables:filter={{
         private_route_table.route_table.id
       }}">private route table</a> in
