@@ -30,12 +30,12 @@
 
 - include: sgs.yml
   vars:
-    sg_collection: '{{ security_groups_common }}'
+    sg_collection: '{{ aws_vpc_security_groups_common }}'
     sg_collection_description: common
 
 - include: sgs.yml
   vars:
-    sg_collection: '{{ security_groups }}'
+    sg_collection: '{{ aws_vpc_security_groups }}'
     sg_collection_description: 'VPC-specific'
 
 - include: roles/aws-ec2/tasks/instance.yml
