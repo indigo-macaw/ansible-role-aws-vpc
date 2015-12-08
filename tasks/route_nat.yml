@@ -7,7 +7,7 @@
                       Name=vpc-id,Values='{{ vpc_id }}'
             --query 'Reservations[0].Instances[0].InstanceId'
             --output text
-            --profile '{{ profile }}'
+            --profile '{{ aws_profile }}'
   register: nat_instance_id
   changed_when: False
 

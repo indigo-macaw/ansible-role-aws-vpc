@@ -7,7 +7,7 @@
                                                   State == `attached`]]
                      .VpnGatewayId'
             --output text
-            --profile '{{ profile }}'
+            --profile '{{ aws_profile }}'
   register: vgw_id
   changed_when: False
 

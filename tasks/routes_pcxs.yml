@@ -3,7 +3,7 @@
 - name: describe VPC peering connections
   command: >
     aws ec2 describe-vpc-peering-connections
-            --profile '{{ profile }}'
+            --profile '{{ aws_profile }}'
   register: pcxs
   changed_when: False
 

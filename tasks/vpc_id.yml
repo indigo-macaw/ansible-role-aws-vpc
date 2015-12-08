@@ -6,7 +6,7 @@
             --filters Name=tag:Name,Values={{ vpc_name }}
             --query 'Vpcs[].VpcId'
             --output text
-            --profile '{{ profile }}'
+            --profile '{{ aws_profile }}'
   register: vpc_id
   changed_when: False
 

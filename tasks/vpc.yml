@@ -3,7 +3,7 @@
 - name: configure VPC
   ec2_vpc:
 
-    profile: '{{ profile }}'
+    profile: '{{ aws_profile }}'
     region: '{{ region }}'
     resource_tags: { 'Name': '{{ vpc_name }}' }
     cidr_block: '{{ cidr_block }}'

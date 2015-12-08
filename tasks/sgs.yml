@@ -5,7 +5,7 @@
 
     name: '{{ item.key }}'
     description: '{{ item.value.description | default(None) }}'
-    profile: '{{ profile }}'
+    profile: '{{ aws_profile }}'
     vpc_id: '{{ vpc_id }}'
     region: '{{ region }}'
     state: '{{ item.value.state | default("present") }}'

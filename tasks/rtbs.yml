@@ -2,7 +2,7 @@
 
 - name: configure public route table
   ec2_vpc_route_table:
-    profile: '{{ profile }}'
+    profile: '{{ aws_profile }}'
     region: '{{ region }}'
     vpc_id: '{{ vpc_id }}'
     routes: '{{ routes_public }}'
@@ -32,7 +32,7 @@
             --query 'RouteTables[0].Routes[?State == `blackhole`]
                          | [?DestinationCidrBlock == `0.0.0.0/0`]'
             --output text
-            --profile '{{ profile }}'
+            --profile '{{ aws_profile }}'
   register: blackhole_default_route
   changed_when: False
 
@@ -44,7 +44,7 @@
               --filters Name=tag:Name,Values=private
               --query 'RouteTables[0].RouteTableId'
               --output text
-              --profile '{{ profile }}'
+              --profile '{{ aws_profile }}'
     register: private_route_table_id
     changed_when: False
 
@@ -53,7 +53,7 @@
       aws ec2 delete-route
               --route-table-id '{{ private_route_table_id.stdout }}'
               --destination-cidr-block 0.0.0.0/0
-              --profile '{{ profile }}'
+              --profile '{{ aws_profile }}'
 
   - name: call optional notifier
     include: 'roles/{{ notifier_role }}/tasks/main.yml'
@@ -75,7 +75,7 @@
 
 - name: configure private route table
   ec2_vpc_route_table:
-    profile: '{{ profile }}'
+    profile: '{{ aws_profile }}'
     region: '{{ region }}'
     vpc_id: '{{ vpc_id }}'
     routes: '{{ routes_private }}'
