@@ -6,7 +6,7 @@
     profile: '{{ aws_profile }}'
     region: '{{ aws_region }}'
     resource_tags: { 'Name': '{{ aws_vpc_name }}' }
-    cidr_block: '{{ cidr_block }}'
+    cidr_block: '{{ aws_vpc_cidr_block }}'
     state: present
 
     internet_gateway: yes
