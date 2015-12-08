@@ -7,7 +7,7 @@
     vpc_id: '{{ vpc_id }}'
     routes: '{{ routes_public }}'
     propagating_vgw_ids: [ '{{ vgw_id }}' ]
-    subnets: '{{ subnets.public | map(attribute="cidr") | list }}'
+    subnets: '{{ aws_vpc_subnets.public | map(attribute="cidr") | list }}'
     resource_tags: { 'Name': 'public' }
   register: public_route_table
 
@@ -80,7 +80,7 @@
     vpc_id: '{{ vpc_id }}'
     routes: '{{ routes_private }}'
     propagating_vgw_ids: [ '{{ vgw_id }}' ]
-    subnets: '{{ subnets.private | map(attribute="cidr") | list }}'
+    subnets: '{{ aws_vpc_subnets.private | map(attribute="cidr") | list }}'
     resource_tags: { 'Name': 'private' }
   register: private_route_table
 
