@@ -41,7 +41,7 @@
 - include: roles/aws-ec2/tasks/instance.yml
   vars:
     instance: nat
-  when: 'instances["nat"] is defined'
+  when: 'aws_ec2_instances["nat"] is defined'
 
 - block:
   - include: route_nat.yml
@@ -61,7 +61,7 @@
         }}">private route table</a> in
         <a href="{{ vpc_url }}">VPC {{ aws_vpc_name }}</a>
     when: notifier_role is defined
-  when: 'instances["nat"] is defined and ec2.changed'
+  when: 'aws_ec2_instances["nat"] is defined and ec2.changed'
 
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
