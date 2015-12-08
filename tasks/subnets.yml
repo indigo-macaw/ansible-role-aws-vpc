@@ -5,12 +5,12 @@
     profile: '{{ aws_profile }}'
     region: '{{ aws_region }}'
     state: present
-    vpc_id: '{{ vpc_id }}'
+    vpc_id: '{{ _aws_vpc_id }}'
     az: '{{ item.az }}'
     cidr: '{{ item.cidr }}'
     resource_tags: '{{ item.resource_tags }}'
   with_items: aws_vpc_subnets.public + aws_vpc_subnets.private
-  register: ec2_vpc_subnet
+  register: _aws_vpc_subnet
 
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
@@ -19,7 +19,7 @@
       configured <a href="https://console.aws.amazon.com/vpc/home?region={{
         aws_region
       }}#subnets:">subnets</a> in
-      <a href="{{ vpc_url }}">VPC {{ aws_vpc_name }}</a>
+      <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
   when: >
     notifier_role is defined and
-    ec2_vpc_subnet.changed
+    _aws_vpc_subnet.changed

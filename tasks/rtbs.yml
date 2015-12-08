@@ -4,12 +4,12 @@
   ec2_vpc_route_table:
     profile: '{{ aws_profile }}'
     region: '{{ aws_region }}'
-    vpc_id: '{{ vpc_id }}'
-    routes: '{{ routes_public }}'
-    propagating_vgw_ids: [ '{{ vgw_id }}' ]
+    vpc_id: '{{ _aws_vpc_id }}'
+    routes: '{{ _aws_vpc_routes_public }}'
+    propagating_vgw_ids: [ '{{ _aws_vpc_vgw_id }}' ]
     subnets: '{{ aws_vpc_subnets.public | map(attribute="cidr") | list }}'
     resource_tags: { 'Name': 'public' }
-  register: public_route_table
+  register: _aws_vpc_public_route_table
 
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
@@ -18,12 +18,12 @@
       configured the <a href="https://console.aws.amazon.com/vpc/home?region={{
         aws_region
       }}#routetables:filter={{
-        public_route_table.route_table.id
+        _aws_vpc_public_route_table.route_table.id
       }}">public route table</a> in
-      <a href="{{ vpc_url }}">VPC {{ aws_vpc_name }}</a>
+      <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
   when: >
     notifier_role is defined and
-    public_route_table.changed
+    _aws_vpc_public_route_table.changed
 
 - name: check for blackhole default route in private route table
   command: >
@@ -33,7 +33,7 @@
                          | [?DestinationCidrBlock == `0.0.0.0/0`]'
             --output text
             --profile '{{ aws_profile }}'
-  register: blackhole_default_route
+  register: _aws_vpc_blackhole_default_route
   changed_when: False
 
 - block:
@@ -45,13 +45,13 @@
               --query 'RouteTables[0].RouteTableId'
               --output text
               --profile '{{ aws_profile }}'
-    register: private_route_table_id
+    register: _aws_vpc_private_route_table_id
     changed_when: False
 
   - name: delete blackhole default route
     command: >
       aws ec2 delete-route
-              --route-table-id '{{ private_route_table_id.stdout }}'
+              --route-table-id '{{ _aws_vpc_private_route_table_id.stdout }}'
               --destination-cidr-block 0.0.0.0/0
               --profile '{{ aws_profile }}'
 
@@ -63,26 +63,26 @@
         <a href="https://console.aws.amazon.com/vpc/home?region={{
           aws_region
         }}#routetables:filter={{
-          private_route_table_id.stdout
+          _aws_vpc_private_route_table_id.stdout
         }}">private route table</a> in
-        <a href="{{ vpc_url }}">VPC {{ aws_vpc_name }}</a>
+        <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
     when: >
       notifier_role is defined
 
   when: >
-    blackhole_default_route.stdout != '' and
-    blackhole_default_route.stdout != 'None'
+    _aws_vpc_blackhole_default_route.stdout != '' and
+    _aws_vpc_blackhole_default_route.stdout != 'None'
 
 - name: configure private route table
   ec2_vpc_route_table:
     profile: '{{ aws_profile }}'
     region: '{{ aws_region }}'
-    vpc_id: '{{ vpc_id }}'
-    routes: '{{ routes_private }}'
-    propagating_vgw_ids: [ '{{ vgw_id }}' ]
+    vpc_id: '{{ _aws_vpc_id }}'
+    routes: '{{ _aws_vpc_routes_private }}'
+    propagating_vgw_ids: [ '{{ _aws_vpc_vgw_id }}' ]
     subnets: '{{ aws_vpc_subnets.private | map(attribute="cidr") | list }}'
     resource_tags: { 'Name': 'private' }
-  register: private_route_table
+  register: _aws_vpc_private_route_table
 
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
@@ -91,9 +91,9 @@
       configured the <a href="https://console.aws.amazon.com/vpc/home?region={{
         aws_region
       }}#routetables:filter={{
-        private_route_table.route_table.id
+        _aws_vpc_private_route_table.route_table.id
       }}">private route table</a> in
-      <a href="{{ vpc_url }}">VPC {{ aws_vpc_name }}</a>
+      <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
   when: >
     notifier_role is defined and
-    private_route_table.changed
+    _aws_vpc_private_route_table.changed

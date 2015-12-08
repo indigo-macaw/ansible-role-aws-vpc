@@ -2,7 +2,7 @@
 
 - name: set global facts
   set_fact:
-    vpc_url: >-
+    _aws_vpc_url: >-
       https://console.aws.amazon.com/vpc/home?region={{ aws_region
         }}#vpcs:filter=^{{ aws_vpc_name }}$
 
@@ -11,7 +11,7 @@
   vars:
     message: >
       started running role <b>aws-vpc</b> on
-      <a href="{{ vpc_url }}">VPC {{ aws_vpc_name }}</a>
+      <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
   when: notifier_role is defined
 
 - include: vpc_id.yml
@@ -57,9 +57,9 @@
         <a href="https://console.aws.amazon.com/vpc/home?region={{
           aws_region
         }}#routetables:filter={{
-          private_route_table.route_table.id
+          _aws_vpc_private_route_table.route_table.id
         }}">private route table</a> in
-        <a href="{{ vpc_url }}">VPC {{ aws_vpc_name }}</a>
+        <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
     when: notifier_role is defined
   when: 'aws_ec2_instances["nat"] is defined and ec2.changed'
 
@@ -68,5 +68,5 @@
   vars:
     message: >
       finished running role <b>aws-vpc</b> on
-      <a href="{{ vpc_url }}">VPC {{ aws_vpc_name }}</a>
+      <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
   when: notifier_role is defined

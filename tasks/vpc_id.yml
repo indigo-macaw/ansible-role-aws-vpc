@@ -7,9 +7,9 @@
             --query 'Vpcs[].VpcId'
             --output text
             --profile '{{ aws_profile }}'
-  register: vpc_id
+  register: _aws_vpc_id
   changed_when: False
 
 - name: set VPC ID fact
   set_fact:
-    vpc_id: '{{ vpc_id.stdout }}'
+    _aws_vpc_id: '{{ _aws_vpc_id.stdout }}'

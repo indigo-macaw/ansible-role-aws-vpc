@@ -3,14 +3,15 @@
 - name: select virtual gateway
   command: >
     aws ec2 describe-vpn-gateways
-            --query 'VpnGateways[?VpcAttachments[?VpcId == `{{ vpc_id }}` &&
-                                                  State == `attached`]]
-                     .VpnGatewayId'
+            --query
+              'VpnGateways[?VpcAttachments[?VpcId == `{{ _aws_vpc_id }}` &&
+                                            State == `attached`]]
+               .VpnGatewayId'
             --output text
             --profile '{{ aws_profile }}'
-  register: vgw_id
+  register: _aws_vpc_vgw_id
   changed_when: False
 
 - name: set virtual gateway fact
   set_fact:
-    vgw_id: '{{ vgw_id.stdout }}'
+    _aws_vpc_vgw_id: '{{ _aws_vpc_vgw_id.stdout }}'

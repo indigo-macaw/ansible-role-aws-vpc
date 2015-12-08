@@ -2,4 +2,4 @@
 
 - name: create public routes
   set_fact:
-    routes_public: '{{ [route_igw] + routes_pcxs }}'
+    _aws_vpc_routes_public: '{{ [_aws_vpc_route_igw] + _aws_vpc_routes_pcxs }}'

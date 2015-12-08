@@ -4,12 +4,12 @@
   command: >
     aws ec2 describe-vpc-peering-connections
             --profile '{{ aws_profile }}'
-  register: pcxs
+  register: _aws_vpc_pcxs
   changed_when: False
 
 - name: create VPC peering connection routes
   set_fact:
-    routes_pcxs: >
-      {{ pcxs.stdout
+    _aws_vpc_routes_pcxs: >
+      {{ _aws_vpc_pcxs.stdout
          | from_json
-         | pcxs_to_routes(vpc_id) }}
+         | pcxs_to_routes(_aws_vpc_id) }}

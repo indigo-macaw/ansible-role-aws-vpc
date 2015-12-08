@@ -6,7 +6,7 @@
     name: '{{ item.key }}'
     description: '{{ item.value.description | default(None) }}'
     profile: '{{ aws_profile }}'
-    vpc_id: '{{ vpc_id }}'
+    vpc_id: '{{ _aws_vpc_id }}'
     region: '{{ aws_region }}'
     state: '{{ item.value.state | default("present") }}'
 
@@ -14,7 +14,7 @@
     rules_egress: '{{ item.value.rules_egress | default(None) }}'
 
   with_dict: '{{ sg_collection | default({}) }}'
-  register: ec2_group
+  register: _aws_vpc_security_groups
 
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
@@ -23,7 +23,7 @@
       updated the <a href="https://console.aws.amazon.com/ec2/v2/home?region={{
         aws_region
       }}#SecurityGroups">{{ sg_collection_description }} security groups</a>
-      in <a href="{{ vpc_url }}">VPC {{ aws_vpc_name }}</a>
+      in <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
   when: >
     notifier_role is defined and
-    ec2_group.changed
+    _aws_vpc_security_groups.changed

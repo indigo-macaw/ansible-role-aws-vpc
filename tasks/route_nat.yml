@@ -4,16 +4,16 @@
   command: >
     aws ec2 describe-instances
             --filters Name=tag:Function,Values=nat
-                      Name=vpc-id,Values='{{ vpc_id }}'
+                      Name=vpc-id,Values='{{ _aws_vpc_id }}'
             --query 'Reservations[0].Instances[0].InstanceId'
             --output text
             --profile '{{ aws_profile }}'
-  register: nat_instance_id
+  register: _aws_vpc_nat_instance_id
   changed_when: False
 
 - name: create NAT instance route
   set_fact:
-    route_nat:
+    _aws_vpc_route_nat:
       dest: 0.0.0.0/0
-      instance_id: '{{ nat_instance_id.stdout }}'
-  when: nat_instance_id.stdout != 'None'
+      instance_id: '{{ _aws_vpc_nat_instance_id.stdout }}'
+  when: _aws_vpc_nat_instance_id.stdout != 'None'
