@@ -1,29 +1,113 @@
 ---
 
-- name: 'configure security groups ({{ sg_collection_description }})'
-  ec2_group:
+- name: set VPC security group URL fact
+  set_fact:
+    _aws_vpc_sg_url: >-
+      https://console.aws.amazon.com/ec2/v2/home?region={{ aws_region
+        }}#SecurityGroups
 
-    name: '{{ item.key }}'
-    description: '{{ item.value.description | default(None) }}'
+- name: set configured security groups fact
+  set_fact:
+    _aws_vpc_configured_sgs: >
+      {{ aws_vpc_security_groups_common
+         | combine(aws_vpc_security_groups)
+         | default({}) }}
+
+- name: get existing security groups
+  command: >
+    aws ec2 describe-security-groups
+            --query 'SecurityGroups[?VpcId == `{{ _aws_vpc_id }}`].GroupName'
+            --profile '{{ aws_profile }}'
+  register: _aws_vpc_existing_sgs
+  changed_when: False
+
+- name: set existing security groups fact
+  set_fact:
+    _aws_vpc_existing_sgs: >
+      {{ _aws_vpc_existing_sgs.stdout | from_json }}
+
+- name: set new and untracked security groups facts
+  set_fact:
+    _aws_vpc_new_sgs: >
+      {{ _aws_vpc_configured_sgs | difference(_aws_vpc_existing_sgs) | sort }}
+    _aws_vpc_untracked_sgs: >
+      {{ _aws_vpc_existing_sgs | difference(_aws_vpc_configured_sgs) | sort }}
+
+- name: configure security groups
+  ec2_group:
+    name: '{{ item }}'
+
+    description: >-
+      {{ _aws_vpc_configured_sgs[item]["description"] | default(None) }}
+
     profile: '{{ aws_profile }}'
     vpc_id: '{{ _aws_vpc_id }}'
     region: '{{ aws_region }}'
-    state: '{{ item.value.state | default("present") }}'
 
-    rules: '{{ item.value.rules | default(None) }}'
-    rules_egress: '{{ item.value.rules_egress | default(None) }}'
+    rules: >-
+      {{ _aws_vpc_configured_sgs[item]["rules"] | default(None) }}
+    rules_egress: >-
+      {{ _aws_vpc_configured_sgs[item]["rules_egress"] | default(None) }}
 
-  with_dict: '{{ sg_collection | default({}) }}'
-  register: _aws_vpc_security_groups
+  with_items: '{{ _aws_vpc_configured_sgs }}'
+  register: _aws_vpc_sgs_results
 
-- name: call optional notifier
+- name: set modified security groups fact
+  set_fact:
+    _aws_vpc_modified_sgs: >
+      {{ _aws_vpc_sgs_results.results
+         | selectattr("changed") | map(attribute="item") | list
+         | difference(_aws_vpc_new_sgs) | sort }}
+
+- name: call optional notifier for newly-created security groups
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
     message: >
-      updated the <a href="https://console.aws.amazon.com/ec2/v2/home?region={{
-        aws_region
-      }}#SecurityGroups">{{ sg_collection_description }} security groups</a>
+      created new security
+      group{%if _aws_vpc_new_sgs.__len__() != 1 %}s{% endif %}
+      {% for sg in _aws_vpc_new_sgs -%}
+      <a href="{{ _aws_vpc_sg_url }}:groupName={{ sg }}">{{ sg }}</a>
+      {%- if not loop.last %}, {% endif -%}
+      {% endfor %}
       in <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
   when: >
     notifier_role is defined and
-    _aws_vpc_security_groups.changed
+    _aws_vpc_new_sgs
+
+- name: call optional notifier for modified security groups
+  include: 'roles/{{ notifier_role }}/tasks/main.yml'
+  vars:
+    message: >
+      modified security
+      group{%if _aws_vpc_modified_sgs.__len__() != 1 %}s{% endif %}
+      {% for sg in _aws_vpc_modified_sgs -%}
+      <a href="{{ _aws_vpc_sg_url }}:groupName={{ sg }}">{{ sg }}</a>
+      {%- if not loop.last %}, {% endif -%}
+      {% endfor %}
+      in <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
+  when: >
+    notifier_role is defined and
+    _aws_vpc_modified_sgs
+
+- name: call optional notifier for untracked security groups
+  include: 'roles/{{ notifier_role }}/tasks/main.yml'
+  vars:
+    message:
+    attachments:
+    - color: warning
+      mrkdwn_in: ['text']
+      text: >
+        *WARNING:* security
+        group{%if _aws_vpc_untracked_sgs.__len__() != 1 %}s{% endif %}
+        {% for sg in _aws_vpc_untracked_sgs -%}
+        <a href="{{ _aws_vpc_sg_url }}:groupName={{ sg }}">{{ sg }}</a>
+        {%- if not loop.last %}, {% endif -%}
+        {% endfor %}
+        exist{%if _aws_vpc_untracked_sgs.__len__() == 1 %}s{% endif %}
+        in <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
+        <br/>but
+        {% if _aws_vpc_untracked_sgs.__len__() == 1 %}is{% else %}are{% endif %}
+        not configured by Ansible
+  when: >
+    notifier_role is defined and
+    _aws_vpc_untracked_sgs
