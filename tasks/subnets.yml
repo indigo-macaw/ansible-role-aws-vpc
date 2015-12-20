@@ -9,7 +9,9 @@
     az: '{{ item.az }}'
     cidr: '{{ item.cidr }}'
     resource_tags: '{{ item.resource_tags }}'
-  with_items: aws_vpc_subnets.public + aws_vpc_subnets.private
+  with_items: >
+    {{ aws_vpc_subnets.public  | default([]) }} +
+    {{ aws_vpc_subnets.private | default([]) }}
   register: _aws_vpc_subnet
 
 - name: call optional notifier
