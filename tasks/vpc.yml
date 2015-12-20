@@ -11,6 +11,8 @@
 
     internet_gateway: yes
 
+    wait: yes
+
   register: _aws_vpc_configuration
 
 - name: call optional notifier
