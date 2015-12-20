@@ -15,6 +15,11 @@
 
   register: _aws_vpc_configuration
 
+- name: set VPC ID fact
+  set_fact:
+    _aws_vpc_id: '{{ _aws_vpc_configuration.vpc_id }}'
+  when: _aws_vpc_configuration.changed
+
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
