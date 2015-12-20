@@ -9,8 +9,8 @@
 - name: set configured security groups fact
   set_fact:
     _aws_vpc_configured_sgs: >
-      {{ aws_vpc_security_groups_common
-         | combine(aws_vpc_security_groups)
+      {{ aws_vpc_security_groups_common | default({})
+         | combine(aws_vpc_security_groups | default({}))
          | default({}) }}
 
 - name: get existing security groups
