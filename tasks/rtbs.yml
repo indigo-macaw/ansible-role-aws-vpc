@@ -10,6 +10,7 @@
     subnets: '{{ aws_vpc_subnets.public | map(attribute="cidr") | list }}'
     resource_tags: { 'Name': 'public' }
   register: _aws_vpc_public_route_table
+  when: aws_vpc_subnets.public is defined
 
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
@@ -83,6 +84,7 @@
     subnets: '{{ aws_vpc_subnets.private | map(attribute="cidr") | list }}'
     resource_tags: { 'Name': 'private' }
   register: _aws_vpc_private_route_table
+  when: aws_vpc_subnets.private is defined
 
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
