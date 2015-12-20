@@ -6,7 +6,7 @@
     region: '{{ aws_region }}'
     vpc_id: '{{ _aws_vpc_id }}'
     routes: '{{ _aws_vpc_routes_public }}'
-    propagating_vgw_ids: [ '{{ _aws_vpc_vgw_id }}' ]
+    propagating_vgw_ids: '{{ _aws_vpc_vgw_ids | default(omit) }}'
     subnets: '{{ aws_vpc_subnets.public | map(attribute="cidr") | list }}'
     resource_tags: { 'Name': 'public' }
   register: _aws_vpc_public_route_table
@@ -79,7 +79,7 @@
     region: '{{ aws_region }}'
     vpc_id: '{{ _aws_vpc_id }}'
     routes: '{{ _aws_vpc_routes_private }}'
-    propagating_vgw_ids: [ '{{ _aws_vpc_vgw_id }}' ]
+    propagating_vgw_ids: '{{ _aws_vpc_vgw_ids | default(omit) }}'
     subnets: '{{ aws_vpc_subnets.private | map(attribute="cidr") | list }}'
     resource_tags: { 'Name': 'private' }
   register: _aws_vpc_private_route_table
