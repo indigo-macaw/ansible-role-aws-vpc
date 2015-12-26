@@ -29,30 +29,7 @@
 - include: rtbs.yml
 - include: sgs.yml
 
-- include: roles/aws-ec2/tasks/instance.yml
-  vars:
-    instance: nat
-  when: 'aws_ec2_instances["nat"] is defined'
-
-- block:
-    - include: route_nat.yml
-    - include: routes_private.yml
-    - include: rtbs.yml
-    - name: call optional notifier
-      include: 'roles/{{ notifier_role }}/tasks/main.yml'
-      vars:
-        message: >
-          added a <a href="https://console.aws.amazon.com/ec2/v2/home?region={{
-            aws_region
-          }}#Instances:tag:Function=nat">NAT</a> route to the
-          <a href="https://console.aws.amazon.com/vpc/home?region={{
-            aws_region
-          }}#routetables:filter={{
-            _aws_vpc_private_route_table.route_table.id
-          }}">private route table</a> in
-          <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
-      when: notifier_role is defined
-  when: 'aws_ec2_instances["nat"] is defined and _aws_ec2_launch.changed'
+- include: nat.yml
 
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
