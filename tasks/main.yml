@@ -15,6 +15,7 @@
   when: notifier_role is defined
 
 - include: vpc_id.yml
+- include: nat_id.yml
 - include: vgw_ids.yml
 
 - include: route_igw.yml
