@@ -6,6 +6,7 @@
   when: 'aws_ec2_instances["nat"] is defined'
 
 - block:
+    - include: nat_id.yml
     - include: route_nat.yml
     - include: routes_private.yml
     - include: rtbs.yml
