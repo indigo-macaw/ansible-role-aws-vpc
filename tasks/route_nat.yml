@@ -4,5 +4,5 @@
   set_fact:
     _aws_vpc_route_nat:
       dest: 0.0.0.0/0
-      instance_id: '{{ _aws_vpc_nat_instance_id.stdout }}'
-  when: _aws_vpc_nat_instance_id.stdout != 'None'
+      instance_id: '{{ _aws_vpc_nat_instance_id }}'
+  when: _aws_vpc_nat_instance_id != 'None'

@@ -10,3 +10,7 @@
             --profile '{{ aws_profile }}'
   register: _aws_vpc_nat_instance_id
   changed_when: False
+
+- name: set NAT instance ID fact
+  set_fact:
+    _aws_vpc_nat_instance_id: '{{ _aws_vpc_nat_instance_id.stdout }}'
