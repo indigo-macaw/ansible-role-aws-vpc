@@ -1,9 +1,17 @@
 ---
 
+- name: look up NAT instance configuration
+  set_fact:
+    _aws_vpc_nat_instance: >
+      {{ aws_ec2_instances
+         | selectattr("function", "equalto", "nat")
+         | first }}
+  when: '"nat" in (aws_ec2_instances | map(attribute="function"))'
+
 - include: roles/aws-ec2/tasks/instance.yml
   vars:
-    instance: nat
-  when: 'aws_ec2_instances["nat"] is defined'
+    instance: '{{ _aws_vpc_nat_instance }}'
+  when: _aws_vpc_nat_instance is defined
 
 - block:
     - include: nat_id.yml
@@ -24,4 +32,4 @@
           }}">private route table</a> in
           <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
       when: notifier_role is defined
-  when: 'aws_ec2_instances["nat"] is defined and _aws_ec2_launch.changed'
+  when: _aws_vpc_nat_instance is defined and _aws_ec2_launch.changed
