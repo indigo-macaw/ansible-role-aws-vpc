@@ -1,5 +1,9 @@
 ---
 
+- name: load NAT instance configuration
+  include_vars: '{{ item }}'
+  with_fileglob: 'host_vars/{{ inventory_hostname }}/ec2/nat.yml'
+
 - name: look up NAT instance configuration
   set_fact:
     _aws_vpc_nat_instance: >
