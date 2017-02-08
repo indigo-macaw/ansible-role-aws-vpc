@@ -10,7 +10,8 @@
       {{ aws_ec2_instances
          | selectattr("function", "equalto", "nat")
          | first }}
-  when: '"nat" in (aws_ec2_instances | map(attribute="function"))'
+  when: 'aws_ec2_instances is defined and
+         "nat" in (aws_ec2_instances | map(attribute="function"))'
 
 - include: roles/aws-ec2/tasks/instance.yml
   vars:
