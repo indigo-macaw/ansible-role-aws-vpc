@@ -6,3 +6,8 @@
     profile: '{{ aws_profile }}'
     region: '{{ aws_region }}'
     vpc_id: '{{ _aws_vpc_id }}'
+  register: _aws_vpc_vgw
+
+- name: set virtual private gateway ID fact
+  set_fact:
+    _aws_vpc_vgw_id: '{{ _aws_vpc_vgw.vgw.id }}'

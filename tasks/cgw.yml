@@ -8,3 +8,8 @@
     name: '{{ aws_vpc_name }} + {{ aws_vpc_cgw_site }}'
     bgp_asn: '{{ aws_vpc_cgw_bgp_asn }}'
     ip_address: '{{ aws_vpc_cgw_ip_address }}'
+  register: _aws_vpc_cgw
+
+- name: set customer gateway ID fact
+  set_fact:
+    _aws_vpc_cgw_id: '{{ _aws_vpc_cgw.gateway.customer_gateway[0].customer_gateway_id }}'
