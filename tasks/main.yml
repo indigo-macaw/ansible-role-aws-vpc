@@ -29,6 +29,7 @@
 - include: dhcp_options.yml
 - include: igw.yml
 - include: cgw.yml
+- include: vgw.yml
 - include: subnets.yml
 - include: rtbs.yml
 - include: sgs.yml
