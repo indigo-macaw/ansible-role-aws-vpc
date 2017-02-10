@@ -30,6 +30,7 @@
 - include: igw.yml
 - include: cgw.yml
 - include: vgw.yml
+- include: vpn.yml
 - include: subnets.yml
 - include: rtbs.yml
 - include: sgs.yml

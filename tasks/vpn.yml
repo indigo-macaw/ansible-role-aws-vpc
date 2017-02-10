@@ -1,0 +1,34 @@
+---
+
+- name: list existing VPN connections
+  command: >
+    aws ec2 describe-vpn-connections
+            --filters 'Name=customer-gateway-id,Values={{ _aws_vpc_cgw_id }}'
+                      'Name=vpn-gateway-id,Values={{ _aws_vpc_vgw_id }}'
+            --output text
+            --profile '{{ aws_profile }}'
+            --query 'VpnConnections[0].VpnConnectionId'
+  register: _aws_vpc_vpn
+  changed_when: False
+
+- name: set VPN connection ID fact
+  set_fact:
+    _aws_vpc_vpn_id: '{{ _aws_vpc_vpn.stdout }}'
+  when: _aws_vpc_vpn.stdout != 'None'
+
+- name: create VPN connection
+  command: >
+    aws ec2 create-vpn-connection
+            --customer-gateway-id '{{ _aws_vpc_cgw_id }}'
+            --output text
+            --profile '{{ aws_profile }}'
+            --query 'VpnConnection.VpnConnectionId'
+            --type ipsec.1
+            --vpn-gateway-id '{{ _aws_vpc_vgw_id }}'
+  when: _aws_vpc_vpn_id is not defined
+  register: _aws_vpc_vpn_create
+
+- name: set VPN connection ID fact
+  set_fact:
+    _aws_vpc_vpn_id: '{{ _aws_vpc_vpn_create.stdout }}'
+  when: _aws_vpc_vpn_create.changed
