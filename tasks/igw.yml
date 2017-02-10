@@ -1,0 +1,18 @@
+---
+
+- name: get Internet gateway ID
+  command: >
+    aws ec2 describe-internet-gateways
+            --filters Name=attachment.vpc-id,Values={{ _aws_vpc_id }}
+            --query 'InternetGateways[].InternetGatewayId'
+            --output text
+            --profile '{{ aws_profile }}'
+  register: _aws_vpc_igw_id
+
+- name: set Internet gateway name tag
+  ec2_tag:
+    profile: '{{ aws_profile }}'
+    region: '{{ aws_region }}'
+    resource: '{{ _aws_vpc_igw_id.stdout }}'
+    tags:
+      Name: '{{ aws_vpc_name }}'

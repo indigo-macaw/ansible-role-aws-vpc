@@ -26,6 +26,7 @@
 - include: routes_public.yml
 
 - include: vpc.yml
+- include: igw.yml
 - include: subnets.yml
 - include: rtbs.yml
 - include: sgs.yml
