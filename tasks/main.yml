@@ -14,28 +14,29 @@
       <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
   when: notifier_role is defined
 
+- include: vpc.yml
 - include: vpc_id.yml
+
+- include: dhcp_options.yml
+- include: subnets.yml
+
+- include: igw.yml
+- include: nat.yml
 - include: nat_id.yml
+
+- include: cgw.yml
+- include: vgw.yml
 - include: vgw_ids.yml
+- include: vpn.yml
 
 - include: route_igw.yml
 - include: route_nat.yml
 - include: routes_pcxs.yml
-
 - include: routes_private.yml
 - include: routes_public.yml
-
-- include: vpc.yml
-- include: dhcp_options.yml
-- include: igw.yml
-- include: cgw.yml
-- include: vgw.yml
-- include: vpn.yml
-- include: subnets.yml
 - include: rtbs.yml
-- include: sgs.yml
 
-- include: nat.yml
+- include: sgs.yml
 
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
