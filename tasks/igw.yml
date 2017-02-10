@@ -8,6 +8,7 @@
             --output text
             --profile '{{ aws_profile }}'
   register: _aws_vpc_igw_id
+  changed_when: False
 
 - name: set Internet gateway name tag
   ec2_tag:
