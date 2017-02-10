@@ -32,3 +32,11 @@
   set_fact:
     _aws_vpc_vpn_id: '{{ _aws_vpc_vpn_create.stdout }}'
   when: _aws_vpc_vpn_create.changed
+
+- name: set VPN connection Name tag
+  ec2_tag:
+    profile: '{{ aws_profile }}'
+    region: '{{ aws_region }}'
+    resource: '{{ _aws_vpc_vpn_id }}'
+    tags:
+      Name: '{{ aws_vpc_name }} + {{ aws_vpc_cgw_site }}'
