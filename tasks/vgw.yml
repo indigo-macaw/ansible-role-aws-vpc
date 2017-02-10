@@ -2,7 +2,7 @@
 
 - name: configure virtual private gateway
   ec2_vpc_vgw:
-    name: '{{ aws_vpc_name }}'
+    name: '{{ aws_vpc_name }} + {{ aws_vpc_cgw_site }}'
     profile: '{{ aws_profile }}'
     region: '{{ aws_region }}'
     vpc_id: '{{ _aws_vpc_id }}'
