@@ -1,18 +1,14 @@
 ---
 
-- name: find NAT instance ID
-  command: >
-    aws ec2 describe-instances
-            --query 'Reservations[]
-                     .Instances[?VpcId == `{{ _aws_vpc_id }}` &&
-                                 Tags[?Key == `Function` &&
-                                       Value == `nat`]]
-                     .InstanceId'
-            --output text
-            --profile '{{ aws_profile }}'
-  register: _aws_vpc_nat_instance_id
-  changed_when: False
+- name: get NAT instance facts
+  ec2_remote_facts:
+    filters:
+      'tag:Function': nat
+      vpc-id: '{{ _aws_vpc_id }}'
+    profile: '{{ aws_profile }}'
+    region: '{{ aws_region }}'
+  register: _aws_vpc_nat_instance
 
 - name: set NAT instance ID fact
   set_fact:
-    _aws_vpc_nat_instance_id: '{{ _aws_vpc_nat_instance_id.stdout }}'
+    _aws_vpc_nat_instance_id: '{{ _aws_vpc_nat_instance.instances[0].id }}'
