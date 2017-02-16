@@ -24,7 +24,7 @@
   include: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
      message: >
-       configured <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
+       created <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
   when: >
     notifier_role is defined and
-    aws_vpc_configuration.changed
+    _aws_vpc_configuration.changed
