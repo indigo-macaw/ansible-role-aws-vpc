@@ -1,15 +1,13 @@
 ---
 
-- name: describe VPCs
-  command: >
-    aws ec2 describe-vpcs
-            --filters Name=tag:Name,Values={{ aws_vpc_name }}
-            --query 'Vpcs[].VpcId'
-            --output text
-            --profile '{{ aws_profile }}'
-  register: _aws_vpc_id
-  changed_when: False
+- name: get VPC facts
+  ec2_vpc_net_facts:
+    filters:
+      'tag:Name': '{{ aws_vpc_name }}'
+    profile: '{{ aws_profile }}'
+    region: '{{ aws_region }}'
+  register: _aws_vpc
 
 - name: set VPC ID fact
   set_fact:
-    _aws_vpc_id: '{{ _aws_vpc_id.stdout }}'
+    _aws_vpc_id: '{{ _aws_vpc.vpcs[0].id }}'
