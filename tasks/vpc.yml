@@ -1,24 +1,20 @@
 ---
 
 - name: configure VPC
-  ec2_vpc:
+  ec2_vpc_net:
 
     profile: '{{ aws_profile }}'
     region: '{{ aws_region }}'
-    resource_tags: { 'Name': '{{ aws_vpc_name }}' }
+
+    name: '{{ aws_vpc_name }}'
     cidr_block: '{{ aws_vpc_cidr_block }}'
     state: present
-
-    internet_gateway: yes
-
-    wait: yes
 
   register: _aws_vpc_configuration
 
 - name: set VPC ID fact
   set_fact:
-    _aws_vpc_id: '{{ _aws_vpc_configuration.vpc_id }}'
-  when: _aws_vpc_configuration.changed
+    _aws_vpc_id: '{{ _aws_vpc_configuration.vpc.id }}'
 
 - name: call optional notifier
   include: 'roles/{{ notifier_role }}/tasks/main.yml'

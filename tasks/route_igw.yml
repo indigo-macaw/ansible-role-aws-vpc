@@ -4,4 +4,4 @@
   set_fact:
     _aws_vpc_route_igw:
       dest: 0.0.0.0/0
-      gateway_id: igw
+      gateway_id: _aws_vpc_igw.gateway_id
