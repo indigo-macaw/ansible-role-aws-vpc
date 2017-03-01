@@ -36,6 +36,8 @@
 - include: routes_public.yml
 - include: rtbs.yml
 
+- include: vpces.yml
+
 - include: sgs.yml
 
 - name: call optional notifier
