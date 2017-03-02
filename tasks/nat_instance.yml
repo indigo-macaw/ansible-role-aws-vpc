@@ -1,24 +1,24 @@
 ---
 
-- name: load NAT instance configuration
-  include_vars: '{{ item }}'
-  with_fileglob: 'host_vars/{{ inventory_hostname }}/ec2/nat.yml'
+- block:
+
+    - name: load NAT instance configuration
+      include_vars: '{{ item }}'
+      with_fileglob: 'host_vars/{{ inventory_hostname }}/ec2/nat.yml'
+
+    - name: look up NAT instance configuration
+      set_fact:
+        _aws_vpc_nat_instance: >
+          {{ aws_ec2_instances
+             | selectattr("function", "equalto", "nat")
+             | first }}
+      when: >
+        aws_ec2_instances is defined and
+        "nat" in (aws_ec2_instances | map(attribute="function"))
+
+    - include: roles/aws-ec2/tasks/instance.yml
+      vars:
+        instance: '{{ _aws_vpc_nat_instance }}'
+      when: _aws_vpc_nat_instance is defined
+
   when: not aws_vpc_nat_gateway
-
-- name: look up NAT instance configuration
-  set_fact:
-    _aws_vpc_nat_instance: >
-      {{ aws_ec2_instances
-         | selectattr("function", "equalto", "nat")
-         | first }}
-  when: >
-    not aws_vpc_nat_gateway and
-    aws_ec2_instances is defined and
-    "nat" in (aws_ec2_instances | map(attribute="function"))
-
-- include: roles/aws-ec2/tasks/instance.yml
-  vars:
-    instance: '{{ _aws_vpc_nat_instance }}'
-  when: >
-    not aws_vpc_nat_gateway and
-    _aws_vpc_nat_instance is defined
