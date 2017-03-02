@@ -5,4 +5,15 @@
     _aws_vpc_route_nat:
       dest: 0.0.0.0/0
       instance_id: '{{ _aws_vpc_nat_instance_id }}'
-  when: _aws_vpc_nat_instance_id is defined
+  when: >
+    not aws_vpc_nat_gateway and
+    _aws_vpc_nat_instance_id is defined
+
+- name: create NAT gateway route
+  set_fact:
+    _aws_vpc_route_nat:
+      dest: 0.0.0.0/0
+      gateway_id: '{{ _aws_vpc_nat_gateway_id }}'
+  when: >
+    aws_vpc_nat_gateway and
+    _aws_vpc_nat_gateway_id is defined

@@ -1,1 +1,36 @@
 ---
+
+- block:
+
+    - name: check for existing NAT gateway
+      ec2_vpc_nat_gateway_facts:
+        filters:
+          state: ['pending', 'available']
+          vpc-id: '{{ _aws_vpc_id }}'
+        profile: '{{ aws_profile }}'
+        region: '{{ aws_region }}'
+      register: _aws_vpc_existing_nat_gateway
+
+    - name: get public subnet facts
+      ec2_vpc_subnet_facts:
+        filters:
+          'tag:Name': public
+          vpc-id: '{{ _aws_vpc_id }}'
+        profile: '{{ aws_profile }}'
+        region: '{{ aws_region }}'
+      register: _aws_vpc_public_subnet_facts
+      when: _aws_vpc_existing_nat_gateway.result | length == 0
+
+    - name: create NAT gateway
+      ec2_vpc_nat_gateway:
+        profile: '{{ aws_profile }}'
+        region: '{{ aws_region }}'
+        subnet_id: >
+          {{ _aws_vpc_public_subnet_facts.subnets
+             | map(attribute='id')
+             | list
+             | random }}
+      register: _aws_vpc_created_nat_gateway
+      when: _aws_vpc_existing_nat_gateway.result | length == 0
+
+  when: aws_vpc_nat_gateway
