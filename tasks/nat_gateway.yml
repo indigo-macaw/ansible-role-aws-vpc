@@ -21,8 +21,76 @@
       register: _aws_vpc_public_subnet_facts
       when: _aws_vpc_existing_nat_gateway.result | length == 0
 
+    - name: get AWS account number
+      command: >
+        aws sts get-caller-identity
+                --output text
+                --profile '{{ aws_profile }}'
+                --query 'Account'
+      register: _aws_vpc_account
+      changed_when: False
+
+    - name: set VPC account fact
+      set_fact:
+        _aws_vpc_account: '{{ _aws_vpc_account.stdout }}'
+
+    - name: check for existing NAT instance with Elastic IP address
+      ec2_remote_facts:
+        filters:
+          network-interface.association.ip-owner-id: '{{ _aws_vpc_account }}'
+          'tag:Function': nat
+          vpc-id: '{{ _aws_vpc_id }}'
+        profile: '{{ aws_profile }}'
+        region: '{{ aws_region }}'
+      register: _aws_vpc_nat_instance_with_eip
+
+    - name: set NAT Elastic IP address fact
+      set_fact:
+        _aws_vpc_nat_elastic_ip: >-
+          {{ _aws_vpc_nat_instance_with_eip.instances[0].public_ip_address }}
+      when: _aws_vpc_nat_instance_with_eip.instances | length == 1
+
+    - name: disassociate Elastic IP address from existing NAT instance
+      ec2_eip:
+        device_id: '{{ _aws_vpc_nat_instance_with_eip.instances[0].id }}'
+        ip: '{{ _aws_vpc_nat_elastic_ip }}'
+        profile: '{{ aws_profile }}'
+        region: '{{ aws_region }}'
+        release_on_disassociation: no
+        state: absent
+      register: _aws_vpc_nat_elastic_ip_disassociation
+      when: _aws_vpc_nat_elastic_ip is defined
+
+    - name: call optional notifier
+      include: 'roles/{{ notifier_role }}/tasks/main.yml'
+      vars:
+        message: >
+          disassociated
+          <a href="https://console.aws.amazon.com/vpc/home?region={{
+            aws_region
+          }}#Addresses:PublicIp={{
+            _aws_vpc_nat_elastic_ip
+          }}">Elastic IP {{
+            _aws_vpc_nat_elastic_ip
+          }}</a> from
+          <a href="https://console.aws.amazon.com/ec2/v2/home?region={{
+            aws_region
+          }}#Instances:instanceId={{
+            _aws_vpc_nat_instance_with_eip.instances[0].id
+          }}">NAT instance {{
+            _aws_vpc_nat_instance_with_eip.instances[0].id
+          }}</a> for reuse with a
+          <a href="https://console.aws.amazon.com/vpc/home?region={{
+            aws_region
+          }}#NatGateways:">NAT gateway</a> in
+          <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
+      when: >
+        notifier_role is defined and
+        _aws_vpc_nat_elastic_ip_disassociation.disassociated.changed
+
     - name: create NAT gateway
       ec2_vpc_nat_gateway:
+        eip_address: '{{ _aws_vpc_nat_elastic_ip | default(omit) }}'
         profile: '{{ aws_profile }}'
         region: '{{ aws_region }}'
         subnet_id: >
