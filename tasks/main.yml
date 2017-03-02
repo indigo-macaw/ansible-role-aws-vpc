@@ -21,7 +21,9 @@
 - include: subnets.yml
 
 - include: igw.yml
-- include: nat.yml
+
+- include: nat_instance.yml
+- include: nat_gateway.yml
 - include: nat_id.yml
 
 - include: cgw.yml
