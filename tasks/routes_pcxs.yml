@@ -1,15 +1,31 @@
 ---
 
-- name: describe VPC peering connections
+- name: create VPC peering connection routes
   command: >
     aws ec2 describe-vpc-peering-connections
             --profile '{{ aws_profile }}'
-  register: _aws_vpc_pcxs
+            --region '{{ aws_region }}'
+            --query
+              'VpcPeeringConnections
+                 [?     AccepterVpcInfo.VpcId == `{{ _aws_vpc_id }}`
+                    || RequesterVpcInfo.VpcId == `{{ _aws_vpc_id }}` ]
+                 .[{
+                     VpcPeeringConnectionId: VpcPeeringConnectionId,
+                     CidrBlock: AccepterVpcInfo.CidrBlock
+                   },
+                   {
+                     VpcPeeringConnectionId: VpcPeeringConnectionId,
+                     CidrBlock: RequesterVpcInfo.CidrBlock
+                   }]
+                 []
+                 |[? CidrBlock != `{{ aws_vpc_cidr_block }}`].
+                 {
+                   dest: CidrBlock,
+                   vpc_peering_connection_id: VpcPeeringConnectionId
+                 }'
+  register: _aws_vpc_routes_pcxs
   changed_when: False
 
-- name: create VPC peering connection routes
+- name: set VPC peering connection routes fact
   set_fact:
-    _aws_vpc_routes_pcxs: >
-      {{ _aws_vpc_pcxs.stdout
-         | from_json
-         | pcxs_to_routes(_aws_vpc_id) }}
+    _aws_vpc_routes_pcxs: '{{ _aws_vpc_routes_pcxs.stdout | from_json }}'
