@@ -86,6 +86,7 @@
           <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
       when: >
         notifier_role is defined and
+        _aws_vpc_nat_elastic_ip is defined and
         _aws_vpc_nat_elastic_ip_disassociation.disassociated.changed
 
     - name: create NAT gateway

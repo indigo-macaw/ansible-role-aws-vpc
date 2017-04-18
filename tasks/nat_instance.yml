@@ -18,7 +18,7 @@
 
     - include: roles/aws-ec2/tasks/instance.yml
       vars:
-        instance: '{{ _aws_vpc_nat_instance }}'
+        _aws_ec2_i: '{{ _aws_vpc_nat_instance }}'
       when: _aws_vpc_nat_instance is defined
 
   when: not aws_vpc_nat_gateway
