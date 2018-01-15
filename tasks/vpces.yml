@@ -1,49 +1,29 @@
 ---
 
-- name: check for existing S3 VPC endpoints
-  command: >
-    aws ec2 describe-vpc-endpoints
-            --filters
-              'Name=service-name,Values=com.amazonaws.{{ aws_region }}.s3'
-              'Name=vpc-endpoint-state,Values=pending,available'
-              'Name=vpc-id,Values={{ _aws_vpc_id }}'
-            --profile '{{ aws_profile }}'
-            --query VpcEndpoints
-            --region '{{ aws_region }}'
-  register: _aws_vpc_existing_s3_vpces
-  changed_when: False
+- name: configure S3 VPC endpoint
+  ec2_vpc_endpoint:
+    profile: '{{ aws_profile }}'
+    region: '{{ aws_region }}'
+    route_table_ids:
+      - '{{ _aws_vpc_public_route_table.route_table.id }}'
+      - '{{ _aws_vpc_private_route_table.route_table.id }}'
+    service: 'com.amazonaws.{{ aws_region }}.s3'
+    vpc_id: '{{ _aws_vpc_id }}'
+  register: _aws_vpc_endpoint
+  when: >
+    _aws_vpc_public_route_table.route_table  is defined and
+    _aws_vpc_private_route_table.route_table is defined
 
-- name: set existing S3 VPC endpoints fact
-  set_fact:
-    _aws_vpc_existing_s3_vpces: >
-      {{ _aws_vpc_existing_s3_vpces.stdout | from_json }}
-
-- block:
-
-    - name: create S3 VPC endpoint
-      command: >
-        aws ec2 create-vpc-endpoint
-                --output text
-                --profile '{{ aws_profile }}'
-                --query VpcEndpoint.VpcEndpointId
-                --region '{{ aws_region }}'
-                --route-table-ids
-                  '{{ _aws_vpc_public_route_table.route_table.id }}'
-                  '{{ _aws_vpc_private_route_table.route_table.id }}'
-                --service-name 'com.amazonaws.{{ aws_region }}.s3'
-                --vpc-id '{{ _aws_vpc_id }}'
-      register: _aws_vpc_created_s3_vpce
-
-    - name: call optional notifier
-      include: 'roles/{{ notifier_role }}/tasks/main.yml'
-      vars:
-        message: >
-          added an <a href="https://console.aws.amazon.com/vpc/home?region={{
-            aws_region
-          }}#Endpoints:vpcEndpointId={{
-            _aws_vpc_created_s3_vpce.stdout
-          }}">S3 VPC endpoint</a> in
-          <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
-      when: notifier_role is defined
-
-  when: _aws_vpc_existing_s3_vpces | length == 0
+- name: call optional notifier
+  include: 'roles/{{ notifier_role }}/tasks/main.yml'
+  vars:
+    message: >
+      added an <a href="https://console.aws.amazon.com/vpc/home?region={{
+        aws_region
+      }}#Endpoints:vpcEndpointId={{
+        _aws_vpc_endpoint.result.vpc_endpoint_id
+      }}">S3 VPC endpoint</a> in
+      <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
+  when: >
+    notifier_role is defined and
+    _aws_vpc_endpoint.changed
