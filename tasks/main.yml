@@ -25,10 +25,17 @@
 - include: nat_gateway.yml
 - include: nat_id.yml
 
-- include: cgw.yml
-- include: vgw.yml
+- block:
+    - include: cgw.yml
+    - include: vgw.yml
+    - include: vgw_ids.yml
+    - include: vpn.yml
+  when: >
+    aws_vpc_cgw_site       is defined and
+    aws_vpc_cgw_bgp_asn    is defined and
+    aws_vpc_cgw_ip_address is defined
+
 - include: vgw_ids.yml
-- include: vpn.yml
 
 - include: route_igw.yml
 - include: route_nat.yml
