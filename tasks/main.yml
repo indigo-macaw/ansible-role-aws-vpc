@@ -15,7 +15,6 @@
   when: notifier_role is defined
 
 - include: vpc.yml
-- include: vpc_id.yml
 
 - include: dhcp_options.yml
 - include: subnets.yml
