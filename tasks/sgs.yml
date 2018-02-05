@@ -14,17 +14,21 @@
          | default({}) }}
 
 - name: get existing security groups
-  command: >
-    aws ec2 describe-security-groups
-            --query 'SecurityGroups[?VpcId == `{{ _aws_vpc_id }}`].GroupName'
-            --profile '{{ aws_profile }}'
+  ec2_group_facts:
+    profile: '{{ aws_profile }}'
+    # this Ansible module supports automatic role assumption
+
+    filters:
+      vpc-id: '{{ _aws_vpc_id }}'
   register: _aws_vpc_existing_sgs
-  changed_when: False
 
 - name: set existing security groups fact
   set_fact:
     _aws_vpc_existing_sgs: >
-      {{ _aws_vpc_existing_sgs.stdout | from_json }}
+      {{
+        _aws_vpc_existing_sgs.security_groups
+        | json_query("[*].group_name")
+      }}
 
 - name: set new and untracked security groups facts
   set_fact:
