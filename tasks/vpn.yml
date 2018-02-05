@@ -1,47 +1,13 @@
 ---
 
-- name: list existing VPN connections
-  command: >
-    aws ec2 describe-vpn-connections
-            --filters 'Name=customer-gateway-id,Values={{ _aws_vpc_cgw_id }}'
-                      'Name=state,Values=pending,available'
-                      'Name=vpn-gateway-id,Values={{ _aws_vpc_vgw_id }}'
-            --output text
-            --profile '{{ aws_profile }}'
-            --query 'VpnConnections[0].VpnConnectionId'
-  register: _aws_vpc_vpn
-  changed_when: False
-
-- name: set VPN connection ID fact
-  set_fact:
-    _aws_vpc_vpn_id: '{{ _aws_vpc_vpn.stdout }}'
-  when: _aws_vpc_vpn.stdout != 'None'
-
 - name: create VPN connection
-  command: >
-    aws ec2 create-vpn-connection
-            --customer-gateway-id '{{ _aws_vpc_cgw_id }}'
-            --output text
-            --profile '{{ aws_profile }}'
-            --query 'VpnConnection.VpnConnectionId'
-            --type ipsec.1
-            --vpn-gateway-id '{{ _aws_vpc_vgw_id }}'
-  when: _aws_vpc_vpn_id is not defined
-  register: _aws_vpc_vpn_create
+  ec2_vpc_vpn:
+    profile: '{{ aws_profile }}'
+    # this Ansible module supports automatic role assumption
 
-- name: set VPN connection ID fact
-  set_fact:
-    _aws_vpc_vpn_id: '{{ _aws_vpc_vpn_create.stdout }}'
-  when: _aws_vpc_vpn_create.changed
-
-- name: set VPN connection Name tag
-  ec2_tag:
-    profile:        '{{ aws_profile }}'
-    aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
-    aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
-    security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
-
+    customer_gateway_id: '{{ _aws_vpc_cgw_id }}'
     region: '{{ aws_region }}'
-    resource: '{{ _aws_vpc_vpn_id }}'
     tags:
       Name: '{{ aws_vpc_name }} + {{ aws_vpc_cgw_site }}'
+    vpn_gateway_id: '{{ _aws_vpc_vgw_id }}'
+  register: _aws_vpc_vpn
