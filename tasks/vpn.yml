@@ -4,6 +4,7 @@
   command: >
     aws ec2 describe-vpn-connections
             --filters 'Name=customer-gateway-id,Values={{ _aws_vpc_cgw_id }}'
+                      'Name=state,Values=pending,available'
                       'Name=vpn-gateway-id,Values={{ _aws_vpc_vgw_id }}'
             --output text
             --profile '{{ aws_profile }}'
