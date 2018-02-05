@@ -35,7 +35,11 @@
 
 - name: set VPN connection Name tag
   ec2_tag:
-    profile: '{{ aws_profile }}'
+    profile:        '{{ aws_profile }}'
+    aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
+    aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
+    security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
+
     region: '{{ aws_region }}'
     resource: '{{ _aws_vpc_vpn_id }}'
     tags:

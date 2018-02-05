@@ -35,12 +35,14 @@
 
 - name: configure security groups
   ec2_group:
+    profile: '{{ aws_profile }}'
+    # this Ansible module supports automatic role assumption
+
     name: '{{ item }}'
 
     description: >-
       {{ _aws_vpc_configured_sgs[item]["description"] | default(None) }}
 
-    profile: '{{ aws_profile }}'
     vpc_id: '{{ _aws_vpc_id }}'
     region: '{{ aws_region }}'
 

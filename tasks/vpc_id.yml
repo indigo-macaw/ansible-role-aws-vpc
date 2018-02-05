@@ -2,9 +2,13 @@
 
 - name: get VPC facts
   ec2_vpc_net_facts:
+    profile:        '{{ aws_profile }}'
+    aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
+    aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
+    security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
+
     filters:
       'tag:Name': '{{ aws_vpc_name }}'
-    profile: '{{ aws_profile }}'
     region: '{{ aws_region }}'
   register: _aws_vpc
 

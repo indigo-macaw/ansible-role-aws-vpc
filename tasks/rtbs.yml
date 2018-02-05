@@ -2,7 +2,11 @@
 
 - name: configure public route table
   ec2_vpc_route_table:
-    profile: '{{ aws_profile }}'
+    profile:        '{{ aws_profile }}'
+    aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
+    aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
+    security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
+
     region: '{{ aws_region }}'
     vpc_id: '{{ _aws_vpc_id }}'
     routes: '{{ _aws_vpc_routes_public }}'
@@ -29,7 +33,11 @@
 
 - name: configure private route table
   ec2_vpc_route_table:
-    profile: '{{ aws_profile }}'
+    profile:        '{{ aws_profile }}'
+    aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
+    aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
+    security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
+
     region: '{{ aws_region }}'
     vpc_id: '{{ _aws_vpc_id }}'
     routes: '{{ _aws_vpc_routes_private }}'

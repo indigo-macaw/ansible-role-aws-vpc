@@ -2,14 +2,15 @@
 
 - name: configure VPC
   ec2_vpc_net:
-
-    profile: '{{ aws_profile }}'
-    region: '{{ aws_region }}'
+    profile:        '{{ aws_profile }}'
+    aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
+    aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
+    security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
 
     name: '{{ aws_vpc_name }}'
     cidr_block: '{{ aws_vpc_cidr_block }}'
+    region: '{{ aws_region }}'
     state: present
-
   register: _aws_vpc_configuration
 
 - name: set VPC ID fact

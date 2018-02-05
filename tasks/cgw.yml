@@ -3,11 +3,12 @@
 - name: configure customer gateway
   ec2_customer_gateway:
     profile: '{{ aws_profile }}'
-    region: '{{ aws_region }}'
+    # this Ansible module supports automatic role assumption
 
     name: '{{ aws_vpc_name }} + {{ aws_vpc_cgw_site }}'
     bgp_asn: '{{ aws_vpc_cgw_bgp_asn }}'
     ip_address: '{{ aws_vpc_cgw_ip_address | ipv4("address") }}'
+    region: '{{ aws_region }}'
   register: _aws_vpc_cgw
 
 - name: set customer gateway ID fact

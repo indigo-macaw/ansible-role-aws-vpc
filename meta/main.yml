@@ -1,0 +1,4 @@
+---
+
+dependencies:
+  - role: aws-iam-assume-role

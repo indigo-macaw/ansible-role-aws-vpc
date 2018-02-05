@@ -3,6 +3,8 @@
 - name: configure subnets
   ec2_vpc_subnet:
     profile: '{{ aws_profile }}'
+    # this Ansible module supports automatic role assumption
+
     region: '{{ aws_region }}'
     state: present
     vpc_id: '{{ _aws_vpc_id }}'
