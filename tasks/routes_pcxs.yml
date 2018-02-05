@@ -1,31 +1,45 @@
 ---
 
-- name: create VPC peering connection routes
-  command: >
-    aws ec2 describe-vpc-peering-connections
-            --profile '{{ aws_profile }}'
-            --region '{{ aws_region }}'
-            --query
-              'VpcPeeringConnections
-                 [?     AccepterVpcInfo.VpcId == `{{ _aws_vpc_id }}`
-                    || RequesterVpcInfo.VpcId == `{{ _aws_vpc_id }}` ]
-                 .[{
-                     VpcPeeringConnectionId: VpcPeeringConnectionId,
-                     CidrBlock: AccepterVpcInfo.CidrBlock
-                   },
-                   {
-                     VpcPeeringConnectionId: VpcPeeringConnectionId,
-                     CidrBlock: RequesterVpcInfo.CidrBlock
-                   }]
-                 []
-                 |[? CidrBlock != `{{ aws_vpc_cidr_block }}`].
-                 {
-                   dest: CidrBlock,
-                   vpc_peering_connection_id: VpcPeeringConnectionId
-                 }'
-  register: _aws_vpc_routes_pcxs
-  changed_when: False
+- name: get all VPC peering connections
+  ec2_vpc_peering_facts:
+    profile: '{{ aws_profile }}'
+    # this Ansible module supports automatic role assumption
 
-- name: set VPC peering connection routes fact
+    filters:
+      status-code: ['pending-acceptance', 'provisioning', 'active']
+    region: '{{ aws_region }}'
+  register: _aws_vpc_routes_pcxs
+
+- name: set VPC peering connection routes fact, for those including this VPC
   set_fact:
-    _aws_vpc_routes_pcxs: '{{ _aws_vpc_routes_pcxs.stdout | from_json }}'
+    _aws_vpc_routes_pcxs: >-
+      {{
+        _aws_vpc_routes_pcxs.result
+        | json_query("
+            [?
+                 accepter_vpc_info.vpc_id == `" + _aws_vpc_id + "`
+              || requester_vpc_info.vpc_id == `" + _aws_vpc_id + "`
+            ]
+            .
+            [
+              {
+                vpc_peering_connection_id: vpc_peering_connection_id,
+                cidr_block: accepter_vpc_info.cidr_block
+              },
+              {
+                vpc_peering_connection_id: vpc_peering_connection_id,
+                cidr_block: requester_vpc_info.cidr_block
+              }
+            ]
+            []
+            |
+            [?
+              cidr_block != `" + aws_vpc_cidr_block + "`
+            ]
+            .
+            {
+              dest: cidr_block,
+              vpc_peering_connection_id: vpc_peering_connection_id
+            }
+          ")
+      }}
