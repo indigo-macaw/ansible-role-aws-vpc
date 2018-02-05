@@ -14,4 +14,4 @@
 - name: set customer gateway ID fact
   set_fact:
     _aws_vpc_cgw_id: >-
-      {{ _aws_vpc_cgw.gateway.customer_gateways[0].customer_gateway_id }}
+      {{ _aws_vpc_cgw.gateway.customer_gateway.customer_gateway_id }}
