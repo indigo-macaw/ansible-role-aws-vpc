@@ -1,16 +1,31 @@
 ---
 
 - name: get virtual gateways
-  command: >
-    aws ec2 describe-vpn-gateways
-            --query
-              'VpnGateways[?VpcAttachments[?VpcId == `{{ _aws_vpc_id }}` &&
-                                            State == `attached`]]
-               .VpnGatewayId'
-            --profile '{{ aws_profile }}'
+  ec2_vpc_vgw_facts:
+    profile: '{{ aws_profile }}'
+    # this Ansible module supports automatic role assumption
+
+    filters:
+      attachment.state: ['attaching', 'attached']
+      attachment.vpc-id: '{{ _aws_vpc_id }}'
+      state: ['pending', 'available']
+    region: '{{ aws_region }}'
   register: _aws_vpc_vgw_ids
-  changed_when: False
 
 - name: set virtual gateways fact
   set_fact:
-    _aws_vpc_vgw_ids: '{{ _aws_vpc_vgw_ids.stdout | from_json }}'
+    _aws_vpc_vgw_ids: >-
+      {{
+        _aws_vpc_vgw_ids.virtual_gateways
+        | json_query("
+            [?
+              vpc_attachments
+                [?
+                     (state == `attaching` || state == `attached`)
+                  && vpc_id == `" + _aws_vpc_id + "`
+                ]
+            ]
+            .
+            vpn_gateway_id
+          ")
+      }}
