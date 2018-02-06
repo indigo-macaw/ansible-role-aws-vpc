@@ -16,7 +16,9 @@
         aws_ec2_instances is defined and
         "nat" in (aws_ec2_instances | map(attribute="function"))
 
-    - include: roles/aws-ec2/tasks/instance.yml
+    - include_role:
+        name: aws-ec2
+        tasks_from: instance
       vars:
         _aws_ec2_i: '{{ _aws_vpc_nat_instance }}'
       when: _aws_vpc_nat_instance is defined

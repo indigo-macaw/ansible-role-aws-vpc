@@ -18,7 +18,7 @@
     _aws_vpc_id: '{{ _aws_vpc_configuration.vpc.id }}'
 
 - name: call optional notifier
-  include: 'roles/{{ notifier_role }}/tasks/main.yml'
+  include_tasks: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
      message: >
        created <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>

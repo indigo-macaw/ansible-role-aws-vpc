@@ -66,7 +66,7 @@
          | difference(_aws_vpc_new_sgs) | sort }}
 
 - name: call optional notifier for newly-created security groups
-  include: 'roles/{{ notifier_role }}/tasks/main.yml'
+  include_tasks: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
     message: >
       created new security
@@ -81,7 +81,7 @@
     _aws_vpc_new_sgs
 
 - name: call optional notifier for modified security groups
-  include: 'roles/{{ notifier_role }}/tasks/main.yml'
+  include_tasks: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
     message: >
       modified security
@@ -96,7 +96,7 @@
     _aws_vpc_modified_sgs
 
 - name: call optional notifier for untracked security groups
-  include: 'roles/{{ notifier_role }}/tasks/main.yml'
+  include_tasks: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
     message:
     attachments:

@@ -17,7 +17,7 @@
   register: _aws_vpc_subnet
 
 - name: call optional notifier
-  include: 'roles/{{ notifier_role }}/tasks/main.yml'
+  include_tasks: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
     message: >
       configured <a href="https://console.aws.amazon.com/vpc/home?region={{

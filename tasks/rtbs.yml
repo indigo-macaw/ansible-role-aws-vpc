@@ -17,7 +17,7 @@
   when: aws_vpc_subnets.public is defined
 
 - name: call optional notifier
-  include: 'roles/{{ notifier_role }}/tasks/main.yml'
+  include_tasks: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
     message: >
       configured the <a href="https://console.aws.amazon.com/vpc/home?region={{
@@ -48,7 +48,7 @@
   when: aws_vpc_subnets.private is defined
 
 - name: call optional notifier
-  include: 'roles/{{ notifier_role }}/tasks/main.yml'
+  include_tasks: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
     message: >
       configured the <a href="https://console.aws.amazon.com/vpc/home?region={{

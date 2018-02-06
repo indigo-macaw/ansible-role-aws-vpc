@@ -7,49 +7,49 @@
         }}#vpcs:filter=^{{ aws_vpc_name }}$
 
 - name: call optional notifier
-  include: 'roles/{{ notifier_role }}/tasks/main.yml'
+  include_tasks: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
     message: >
       started running role <b>aws-vpc</b> on
       <a href="{{ _aws_vpc_url }}">VPC {{ aws_vpc_name }}</a>
   when: notifier_role is defined
 
-- include: vpc.yml
+- include_tasks: vpc.yml
 
-- include: dhcp_options.yml
-- include: subnets.yml
+- include_tasks: dhcp_options.yml
+- include_tasks: subnets.yml
 
-- include: igw.yml
+- include_tasks: igw.yml
 
-- include: nat_instance.yml
-- include: nat_gateway.yml
-- include: nat_id.yml
+- include_tasks: nat_instance.yml
+- include_tasks: nat_gateway.yml
+- include_tasks: nat_id.yml
 
 - block:
-    - include: cgw.yml
-    - include: vgw.yml
-    - include: vgw_ids.yml
-    - include: vpn.yml
+    - include_tasks: cgw.yml
+    - include_tasks: vgw.yml
+    - include_tasks: vgw_ids.yml
+    - include_tasks: vpn.yml
   when: >
     aws_vpc_cgw_site       is defined and
     aws_vpc_cgw_bgp_asn    is defined and
     aws_vpc_cgw_ip_address is defined
 
-- include: vgw_ids.yml
+- include_tasks: vgw_ids.yml
 
-- include: route_igw.yml
-- include: route_nat.yml
-- include: routes_pcxs.yml
-- include: routes_private.yml
-- include: routes_public.yml
-- include: rtbs.yml
+- include_tasks: route_igw.yml
+- include_tasks: route_nat.yml
+- include_tasks: routes_pcxs.yml
+- include_tasks: routes_private.yml
+- include_tasks: routes_public.yml
+- include_tasks: rtbs.yml
 
-- include: vpces.yml
+- include_tasks: vpces.yml
 
-- include: sgs.yml
+- include_tasks: sgs.yml
 
 - name: call optional notifier
-  include: 'roles/{{ notifier_role }}/tasks/main.yml'
+  include_tasks: 'roles/{{ notifier_role }}/tasks/main.yml'
   vars:
     message: >
       finished running role <b>aws-vpc</b> on
