@@ -41,7 +41,7 @@
         _aws_vpc_account: '{{ _aws_vpc_account.stdout }}'
 
     - name: check for existing NAT instance with Elastic IP address
-      ec2_remote_facts:
+      ec2_instance_facts:
         profile:        '{{ aws_profile }}'
         aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
         aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
@@ -67,7 +67,7 @@
         aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
         security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
 
-        device_id: '{{ _aws_vpc_nat_instance_with_eip.instances[0].id }}'
+        device_id: '{{ _aws_vpc_nat_instance_with_eip.instances[0].instance_id }}'
         ip: '{{ _aws_vpc_nat_elastic_ip }}'
         region: '{{ aws_region }}'
         release_on_disassociation: no
@@ -90,9 +90,9 @@
           <a href="https://console.aws.amazon.com/ec2/v2/home?region={{
             aws_region
           }}#Instances:instanceId={{
-            _aws_vpc_nat_instance_with_eip.instances[0].id
+            _aws_vpc_nat_instance_with_eip.instances[0].instance_id
           }}">NAT instance {{
-            _aws_vpc_nat_instance_with_eip.instances[0].id
+            _aws_vpc_nat_instance_with_eip.instances[0].instance_id
           }}</a> for reuse with a
           <a href="https://console.aws.amazon.com/vpc/home?region={{
             aws_region

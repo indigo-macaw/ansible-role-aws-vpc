@@ -1,7 +1,7 @@
 ---
 
 - name: get NAT instance facts
-  ec2_remote_facts:
+  ec2_instance_facts:
     profile:        '{{ aws_profile }}'
     aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
     aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
@@ -15,7 +15,7 @@
 
 - name: set NAT instance ID fact
   set_fact:
-    _aws_vpc_nat_instance_id: '{{ _aws_vpc_nat_instance.instances[0].id }}'
+    _aws_vpc_nat_instance_id: '{{ _aws_vpc_nat_instance.instances[0].instance_id }}'
   when: _aws_vpc_nat_instance.instances | length == 1
 
 - name: set NAT gateway ID fact
