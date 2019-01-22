@@ -16,13 +16,9 @@
 
 - name: list default VPCs
   ec2_vpc_net_facts:
-    profile:        '{{ aws_profile }}'
-    aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
-    aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
-    security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
-
     filters:
       isDefault: 'true'
+    profile: '{{ aws_profile }}'
     region: '{{ _aws_vpc_region }}'
   loop: '{{ _aws_vpc_regions }}'
   loop_control:
@@ -68,13 +64,9 @@
 
 - name: get default VPC subnet facts
   ec2_vpc_subnet_facts:
-    profile:        '{{ aws_profile }}'
-    aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
-    aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
-    security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
-
     filters:
       vpc-id: '{{ _aws_vpc_default_vpc.vpc_id }}'
+    profile: '{{ aws_profile }}'
     region: '{{ _aws_vpc_default_vpc.region }}'
   loop: '{{ _aws_vpc_default_vpcs }}'
   loop_control:
@@ -106,10 +98,8 @@
 
 - name: delete default VPC subnets
   ec2_vpc_subnet:
-    profile: '{{ aws_profile }}'
-    # this Ansible module supports automatic role assumption
-
     cidr: '{{ _aws_vpc_default_vpc_subnet.cidr_block }}'
+    profile: '{{ aws_profile }}'
     region: '{{ _aws_vpc_default_vpc_subnet.region }}'
     state: absent
     vpc_id: '{{ _aws_vpc_default_vpc_subnet.vpc_id }}'
@@ -122,11 +112,7 @@
 
 - name: set default VPC "Name" tag for reference by ec2_vpc_net module
   ec2_tag:
-    profile:        '{{ aws_profile }}'
-    aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
-    aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
-    security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
-
+    profile: '{{ aws_profile }}'
     region: '{{ _aws_vpc_default_vpc.region }}'
     resource: '{{ _aws_vpc_default_vpc.vpc_id }}'
     tags:
@@ -138,13 +124,9 @@
 
 - name: delete default VPCs
   ec2_vpc_net:
-    profile:        '{{ aws_profile }}'
-    aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
-    aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
-    security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
-
     cidr_block: '{{ _aws_vpc_default_vpc.cidr_block }}'
     name: default
+    profile: '{{ aws_profile }}'
     region: '{{ _aws_vpc_default_vpc.region }}'
     state: absent
   loop: '{{ _aws_vpc_default_vpcs }}'
