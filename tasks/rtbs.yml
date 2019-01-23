@@ -2,17 +2,13 @@
 
 - name: configure public route table
   ec2_vpc_route_table:
-    profile:        '{{ aws_profile }}'
-    aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
-    aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
-    security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
-
-    region: '{{ aws_region }}'
-    vpc_id: '{{ _aws_vpc_id }}'
-    routes: '{{ _aws_vpc_routes_public }}'
+    profile: '{{ aws_profile }}'
     propagating_vgw_ids: '{{ _aws_vpc_vgw_ids | default(omit) }}'
-    subnets: '{{ aws_vpc_subnets.public | map(attribute="cidr") | list }}'
+    region: '{{ aws_region }}'
     resource_tags: { 'Name': 'public' }
+    routes: '{{ _aws_vpc_routes_public }}'
+    subnets: '{{ aws_vpc_subnets.public | map(attribute="cidr") | list }}'
+    vpc_id: '{{ _aws_vpc_id }}'
   register: _aws_vpc_public_route_table
   when: aws_vpc_subnets.public is defined
 
@@ -33,17 +29,13 @@
 
 - name: configure private route table
   ec2_vpc_route_table:
-    profile:        '{{ aws_profile }}'
-    aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
-    aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
-    security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
-
-    region: '{{ aws_region }}'
-    vpc_id: '{{ _aws_vpc_id }}'
-    routes: '{{ _aws_vpc_routes_private }}'
+    profile: '{{ aws_profile }}'
     propagating_vgw_ids: '{{ _aws_vpc_vgw_ids | default(omit) }}'
-    subnets: '{{ aws_vpc_subnets.private | map(attribute="cidr") | list }}'
+    region: '{{ aws_region }}'
     resource_tags: { 'Name': 'private' }
+    routes: '{{ _aws_vpc_routes_private }}'
+    subnets: '{{ aws_vpc_subnets.private | map(attribute="cidr") | list }}'
+    vpc_id: '{{ _aws_vpc_id }}'
   register: _aws_vpc_private_route_table
   when: aws_vpc_subnets.private is defined
 
