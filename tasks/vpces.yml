@@ -3,8 +3,6 @@
 - name: configure S3 VPC endpoint
   ec2_vpc_endpoint:
     profile: '{{ aws_profile }}'
-    # this Ansible module supports automatic role assumption
-
     region: '{{ aws_region }}'
     route_table_ids:
       - '{{ _aws_vpc_public_route_table.route_table.id }}'
