@@ -2,14 +2,10 @@
 
 - name: get NAT instance facts
   ec2_instance_facts:
-    profile:        '{{ aws_profile }}'
-    aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
-    aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
-    security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
-
     filters:
       'tag:Function': nat
       vpc-id: '{{ _aws_vpc_id }}'
+    profile: '{{ aws_profile }}'
     region: '{{ aws_region }}'
   register: _aws_vpc_nat_instance
 

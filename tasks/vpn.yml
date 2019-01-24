@@ -2,10 +2,8 @@
 
 - name: create VPN connection
   ec2_vpc_vpn:
-    profile: '{{ aws_profile }}'
-    # this Ansible module supports automatic role assumption
-
     customer_gateway_id: '{{ _aws_vpc_cgw_id }}'
+    profile: '{{ aws_profile }}'
     region: '{{ aws_region }}'
     tags:
       Name: '{{ aws_vpc_name }} + {{ aws_vpc_cgw_site }}'

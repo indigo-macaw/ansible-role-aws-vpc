@@ -2,13 +2,11 @@
 
 - name: get virtual gateways
   ec2_vpc_vgw_facts:
-    profile: '{{ aws_profile }}'
-    # this Ansible module supports automatic role assumption
-
     filters:
       attachment.state: ['attaching', 'attached']
       attachment.vpc-id: '{{ _aws_vpc_id }}'
       state: ['pending', 'available']
+    profile: '{{ aws_profile }}'
     region: '{{ aws_region }}'
   register: _aws_vpc_vgw_ids
 

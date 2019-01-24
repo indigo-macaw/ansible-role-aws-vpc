@@ -4,25 +4,19 @@
 
     - name: check for existing NAT gateway
       ec2_vpc_nat_gateway_facts:
-        profile: '{{ aws_profile }}'
-        # this Ansible module supports automatic role assumption
-
         filters:
           state: ['pending', 'available']
           vpc-id: '{{ _aws_vpc_id }}'
+        profile: '{{ aws_profile }}'
         region: '{{ aws_region }}'
       register: _aws_vpc_existing_nat_gateway
 
     - name: get public subnet facts
       ec2_vpc_subnet_facts:
-        profile:        '{{ aws_profile }}'
-        aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
-        aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
-        security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
-
         filters:
           'tag:Name': public
           vpc-id: '{{ _aws_vpc_id }}'
+        profile: '{{ aws_profile }}'
         region: '{{ aws_region }}'
       register: _aws_vpc_public_subnet_facts
       when: _aws_vpc_existing_nat_gateway.result | length == 0
@@ -42,15 +36,11 @@
 
     - name: check for existing NAT instance with Elastic IP address
       ec2_instance_facts:
-        profile:        '{{ aws_profile }}'
-        aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
-        aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
-        security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
-
         filters:
           network-interface.association.ip-owner-id: '{{ _aws_vpc_account }}'
           'tag:Function': nat
           vpc-id: '{{ _aws_vpc_id }}'
+        profile: '{{ aws_profile }}'
         region: '{{ aws_region }}'
       register: _aws_vpc_nat_instance_with_eip
 
@@ -105,10 +95,8 @@
 
     - name: create NAT gateway
       ec2_vpc_nat_gateway:
-        profile: '{{ aws_profile }}'
-        # this Ansible module supports automatic role assumption
-
         eip_address: '{{ _aws_vpc_nat_elastic_ip | default(omit) }}'
+        profile: '{{ aws_profile }}'
         region: '{{ aws_region }}'
         subnet_id: >
           {{ _aws_vpc_public_subnet_facts.subnets

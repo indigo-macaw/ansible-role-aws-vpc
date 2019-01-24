@@ -2,11 +2,9 @@
 
 - name: get all VPC peering connections
   ec2_vpc_peering_facts:
-    profile: '{{ aws_profile }}'
-    # this Ansible module supports automatic role assumption
-
     filters:
       status-code: ['pending-acceptance', 'provisioning', 'active']
+    profile: '{{ aws_profile }}'
     region: '{{ aws_region }}'
   register: _aws_vpc_routes_pcxs
 
