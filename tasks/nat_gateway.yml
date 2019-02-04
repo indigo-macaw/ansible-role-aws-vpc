@@ -66,7 +66,8 @@
       when: _aws_vpc_nat_elastic_ip is defined
 
     - name: call optional notifier
-      include_tasks: 'roles/{{ notifier_role }}/tasks/main.yml'
+      include_role:
+        name: '{{ notifier_role }}'
       vars:
         message: >
           disassociated
@@ -107,7 +108,8 @@
       when: _aws_vpc_existing_nat_gateway.result | length == 0
 
     - name: call optional notifier
-      include_tasks: 'roles/{{ notifier_role }}/tasks/main.yml'
+      include_role:
+        name: '{{ notifier_role }}'
       vars:
         message: >
           created a <a href="https://console.aws.amazon.com/vpc/home?region={{

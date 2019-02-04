@@ -7,7 +7,8 @@
         }}#vpcs:filter=^{{ aws_vpc_name }}$
 
 - name: call optional notifier
-  include_tasks: 'roles/{{ notifier_role }}/tasks/main.yml'
+  include_role:
+    name: '{{ notifier_role }}'
   vars:
     message: >
       started running role <b>aws-vpc</b> on
@@ -49,7 +50,8 @@
 - include_tasks: sgs.yml
 
 - name: call optional notifier
-  include_tasks: 'roles/{{ notifier_role }}/tasks/main.yml'
+  include_role:
+    name: '{{ notifier_role }}'
   vars:
     message: >
       finished running role <b>aws-vpc</b> on
