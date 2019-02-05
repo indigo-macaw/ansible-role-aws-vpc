@@ -15,7 +15,8 @@
     _aws_vpc_private_route_table.route_table is defined
 
 - name: call optional notifier
-  include_tasks: 'roles/{{ notifier_role }}/tasks/main.yml'
+  include_role:
+    name: '{{ notifier_role }}'
   vars:
     message: >
       added an <a href="https://console.aws.amazon.com/vpc/home?region={{
