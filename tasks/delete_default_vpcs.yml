@@ -1,0 +1,135 @@
+---
+
+- name: list all regions
+  aws_region_facts:
+    profile: '{{ aws_profile }}'
+  register: _aws_vpc_region_facts
+
+- name: set region list fact
+  set_fact:
+    _aws_vpc_regions: >-
+      {{
+        _aws_vpc_region_facts
+        | json_query("regions[*].region_name")
+        | sort
+      }}
+
+- name: list default VPCs
+  ec2_vpc_net_facts:
+    filters:
+      isDefault: 'true'
+    profile: '{{ aws_profile }}'
+    region: '{{ _aws_vpc_region }}'
+  loop: '{{ _aws_vpc_regions }}'
+  loop_control:
+    loop_var: _aws_vpc_region
+  register: _aws_vpc_default_vpcs_facts
+
+- name: initialize default VPC list fact
+  set_fact:
+    _aws_vpc_default_vpcs: []
+
+- name: set default VPC list fact
+  set_fact:
+    _aws_vpc_default_vpcs: >-
+      {{
+        _aws_vpc_default_vpcs
+        | union([{
+                  'cidr_block': _aws_vpc_region.vpcs[0].cidr_block,
+                  'region':     _aws_vpc_region._aws_vpc_region,
+                  'vpc_id':     _aws_vpc_region.vpcs[0].vpc_id
+               }])
+      }}
+  loop: '{{ _aws_vpc_default_vpcs_facts.results }}'
+  loop_control:
+    label: '{{ _aws_vpc_region._aws_vpc_region }}'
+    loop_var: _aws_vpc_region
+  when: _aws_vpc_region.vpcs != []
+
+- name: delete default VPC Internet gateways
+  ec2_vpc_igw:
+    profile:        '{{ aws_profile }}'
+    aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
+    aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
+    security_token: '{{ aws_iam_assume_role_session_token | default(omit) }}'
+
+    region: '{{ _aws_vpc_default_vpc.region }}'
+    state: absent
+    vpc_id: '{{ _aws_vpc_default_vpc.vpc_id }}'
+  loop: '{{ _aws_vpc_default_vpcs }}'
+  loop_control:
+    label: '{{ _aws_vpc_default_vpc.region }}'
+    loop_var: _aws_vpc_default_vpc
+  register: _aws_vpc_igw
+
+- name: get default VPC subnet facts
+  ec2_vpc_subnet_facts:
+    filters:
+      vpc-id: '{{ _aws_vpc_default_vpc.vpc_id }}'
+    profile: '{{ aws_profile }}'
+    region: '{{ _aws_vpc_default_vpc.region }}'
+  loop: '{{ _aws_vpc_default_vpcs }}'
+  loop_control:
+    label: '{{ _aws_vpc_default_vpc.region }}'
+    loop_var: _aws_vpc_default_vpc
+  register: _aws_vpc_default_vpc_subnet_facts
+
+- name: initialize default VPC subnet list fact
+  set_fact:
+    _aws_vpc_default_vpc_subnets: []
+
+- name: set default VPC subnet list fact
+  set_fact:
+    _aws_vpc_default_vpc_subnets: >-
+      {{
+        _aws_vpc_default_vpc_subnets
+        | union(
+            _aws_vpc_default_vpc_subnet_fact
+            | json_query("subnets[*].{cidr_block: cidr_block, 
+                                      region: '" + region + "',
+                                      vpc_id: vpc_id}"))
+      }}
+  loop: '{{ _aws_vpc_default_vpc_subnet_facts.results }}'
+  loop_control:
+    label: '{{ region }}'
+    loop_var: _aws_vpc_default_vpc_subnet_fact
+  vars:
+    region: '{{ _aws_vpc_default_vpc_subnet_fact._aws_vpc_default_vpc.region }}'
+
+- name: delete default VPC subnets
+  ec2_vpc_subnet:
+    cidr: '{{ _aws_vpc_default_vpc_subnet.cidr_block }}'
+    profile: '{{ aws_profile }}'
+    region: '{{ _aws_vpc_default_vpc_subnet.region }}'
+    state: absent
+    vpc_id: '{{ _aws_vpc_default_vpc_subnet.vpc_id }}'
+  loop: '{{ _aws_vpc_default_vpc_subnets }}'
+  loop_control:
+    label: >-
+      {{ _aws_vpc_default_vpc_subnet.region }},
+      {{ _aws_vpc_default_vpc_subnet.cidr_block }}
+    loop_var: _aws_vpc_default_vpc_subnet
+
+- name: set default VPC "Name" tag for reference by ec2_vpc_net module
+  ec2_tag:
+    profile: '{{ aws_profile }}'
+    region: '{{ _aws_vpc_default_vpc.region }}'
+    resource: '{{ _aws_vpc_default_vpc.vpc_id }}'
+    tags:
+      Name: default
+  loop: '{{ _aws_vpc_default_vpcs }}'
+  loop_control:
+    label: '{{ _aws_vpc_default_vpc.region }}'
+    loop_var: _aws_vpc_default_vpc
+
+- name: delete default VPCs
+  ec2_vpc_net:
+    cidr_block: '{{ _aws_vpc_default_vpc.cidr_block }}'
+    name: default
+    profile: '{{ aws_profile }}'
+    region: '{{ _aws_vpc_default_vpc.region }}'
+    state: absent
+  loop: '{{ _aws_vpc_default_vpcs }}'
+  loop_control:
+    label: '{{ _aws_vpc_default_vpc.region }}'
+    loop_var: _aws_vpc_default_vpc
