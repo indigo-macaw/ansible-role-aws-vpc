@@ -1,7 +1,7 @@
 ---
 
 - name: configure DHCP options set
-  ec2_vpc_dhcp_options:
+  ec2_vpc_dhcp_option:
     profile:        '{{ aws_profile }}'
     aws_access_key: '{{ aws_iam_assume_role_access_key    | default(omit) }}'
     aws_secret_key: '{{ aws_iam_assume_role_secret_key    | default(omit) }}'
@@ -11,15 +11,15 @@
     vpc_id: '{{ _aws_vpc_id }}'
 
     tags:
-      Name: '{{ aws_vpc_dhcp_options.domain_name | default(omit) }}'
+      Name: '{{ aws_vpc_dhcp_option.domain_name | default(omit) }}'
 
-    domain_name: '{{ aws_vpc_dhcp_options.domain_name | default(omit) }}'
+    domain_name: '{{ aws_vpc_dhcp_option.domain_name | default(omit) }}'
 
-    dns_servers: '{{ aws_vpc_dhcp_options.dns_servers | default(omit) }}'
+    dns_servers: '{{ aws_vpc_dhcp_option.dns_servers | default(omit) }}'
 
     netbios_name_servers: >-
-      {{ aws_vpc_dhcp_options.netbios_name_servers | default(omit) }}
+      {{ aws_vpc_dhcp_option.netbios_name_servers | default(omit) }}
     netbios_node_type: >-
-      {{ aws_vpc_dhcp_options.netbios_node_type | default(omit) }}
+      {{ aws_vpc_dhcp_option.netbios_node_type | default(omit) }}
 
-    ntp_servers: '{{ aws_vpc_dhcp_options.ntp_servers | default(omit) }}'
+    ntp_servers: '{{ aws_vpc_dhcp_option.ntp_servers | default(omit) }}'
