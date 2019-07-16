@@ -11,15 +11,15 @@
     vpc_id: '{{ _aws_vpc_id }}'
 
     tags:
-      Name: '{{ aws_vpc_dhcp_option.domain_name | default(omit) }}'
+      Name: '{{ aws_vpc_dhcp_options_set.domain_name | default(omit) }}'
 
-    domain_name: '{{ aws_vpc_dhcp_option.domain_name | default(omit) }}'
+    domain_name: '{{ aws_vpc_dhcp_options_set.domain_name | default(omit) }}'
 
-    dns_servers: '{{ aws_vpc_dhcp_option.dns_servers | default(omit) }}'
+    dns_servers: '{{ aws_vpc_dhcp_options_set.dns_servers | default(omit) }}'
 
     netbios_name_servers: >-
-      {{ aws_vpc_dhcp_option.netbios_name_servers | default(omit) }}
+      {{ aws_vpc_dhcp_options_set.netbios_name_servers | default(omit) }}
     netbios_node_type: >-
-      {{ aws_vpc_dhcp_option.netbios_node_type | default(omit) }}
+      {{ aws_vpc_dhcp_options_set.netbios_node_type | default(omit) }}
 
-    ntp_servers: '{{ aws_vpc_dhcp_option.ntp_servers | default(omit) }}'
+    ntp_servers: '{{ aws_vpc_dhcp_options_set.ntp_servers | default(omit) }}'
