@@ -1,0 +1,14 @@
+---
+
+- name: set transit gateway routes fact
+  set_fact:
+    _aws_vpc_routes_tgw: >-
+      {{
+        aws_vpc_transit_gateway_routes
+        | json_query("
+            [*].{
+              transit_gateway_id: `" + aws_transit_gateway_id + "`,
+              dest: @
+            }
+          ")
+      }}
