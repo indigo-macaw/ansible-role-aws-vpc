@@ -2,10 +2,10 @@
 
 - name: create private routes (with NAT instance)
   set_fact:
-    _aws_vpc_routes_private: '{{ [_aws_vpc_route_nat] + _aws_vpc_routes_pcxs }}'
+    _aws_vpc_routes_private: '{{ [_aws_vpc_route_nat] + _aws_vpc_routes_pcxs + _aws_vpc_routes_tgw }}'
   when: _aws_vpc_route_nat is defined
 
 - name: create private routes (without NAT instance)
   set_fact:
-    _aws_vpc_routes_private: '{{ _aws_vpc_routes_pcxs }}'
+    _aws_vpc_routes_private: '{{ _aws_vpc_routes_pcxs + _aws_vpc_routes_tgw }}'
   when: _aws_vpc_route_nat is not defined
