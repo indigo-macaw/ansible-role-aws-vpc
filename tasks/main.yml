@@ -41,8 +41,11 @@
 - include_tasks: route_igw.yml
 - include_tasks: route_nat.yml
 - include_tasks: routes_pcxs.yml
+- include_tasks: routes_tgw.yml
+
 - include_tasks: routes_private.yml
 - include_tasks: routes_public.yml
+
 - include_tasks: rtbs.yml
 
 - include_tasks: vpces.yml
